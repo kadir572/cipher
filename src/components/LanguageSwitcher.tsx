@@ -80,8 +80,8 @@ export default function LanguageSwitcher() {
                   onSelect={currentValue => {
                     setValue(currentValue)
                     setOpen(false)
-                    i18n.changeLanguage(currentValue)
                     localStorage.setItem('language', currentValue)
+                    i18n.changeLanguage(currentValue)
                   }}
                 >
                   {l.label}
