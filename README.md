@@ -2,6 +2,13 @@
 
 Encryption application built with Tauri v2 with a React frontend. Encryption algorithm used is XChaCha20-Poly1305.
 
+## Build for Windows from Fedora
+
+```bash
+cargo tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc
+
+```
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
