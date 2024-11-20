@@ -40,3 +40,9 @@ jobs:
         run: |
           cd src-tauri
           cargo tauri build --bundles app
+
+      - name: Upload macOS Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-app-build
+          path: src-tauri/target/release/bundle/macos/cipher.app
