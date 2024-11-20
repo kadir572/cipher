@@ -30,6 +30,9 @@ jobs:
           cd src-tauri
           cargo update
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
       - name: Build macOS App with Cargo
         run: |
           cd src-tauri
