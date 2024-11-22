@@ -31,17 +31,22 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
-      - name: Install Linux Dependencies for Tauri
+      - name: Install Linux Dependencies for Tauri and Soup
         run: |
           sudo apt update
-          sudo apt install -y libwebkit2gtk-4.0-dev \
+          sudo apt install -y \
+            libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
             libssl-dev \
             libgtk-3-dev \
             libayatana-appindicator3-dev \
-            librsvg2-dev
+            librsvg2-dev \
+            libappindicator3-dev \ # For compatibility on older systems
+            pkg-config \           # Required by soup3-sys
+            libglib2.0-dev \       # Required by soup3-sys
+            libsoup3-dev           # Soup3 library development files
 
       - name: Install Project Dependencies
         run: npm install
