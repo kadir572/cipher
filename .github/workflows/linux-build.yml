@@ -41,6 +41,7 @@ jobs:
             libgdk-pixbuf-2.0-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
+            libsoup3.0-dev \
             build-essential \
             curl \
             wget \
