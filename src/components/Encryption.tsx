@@ -23,14 +23,16 @@ import FileUploadIcon from './icons/FileUploadIcon'
 import LockIcon from './icons/LockIcon'
 import ShowPasswordIcon from './icons/ShowPasswordIcon'
 import HidePasswordIcon from './icons/HidePasswordIcon'
-
+import ClipLoader from 'react-spinners/ClipLoader'
+import TickIcon from './icons/TickIcon'
 export default function Encryption() {
   const { t } = useTranslation()
   const passwordInputRef = useRef<HTMLInputElement>(null)
 
   const { addLog } = useLogStore()
-  const { setProgress, progress } = useProgressStore()
-  const { filePath, setFilePath } = useFilePathStore()
+  const { setProgress, progress, addProgress, resetProgress } =
+    useProgressStore()
+  const { filePaths, addFilePath, resetFilePaths } = useFilePathStore()
   const { isProcessing, setIsProcessing } = useIsProcessingStore()
   const { password, setPassword, showPassword, setShowPassword } =
     usePasswordStore()
@@ -60,12 +62,24 @@ export default function Encryption() {
   const handleClick = async () => {
     if (isProcessing) return
     try {
-      const fp = await open({
-        multiple: false,
+      const fpArr = await open({
+        multiple: true,
         directory: false,
       })
-      if (!fp) return
-      setFilePath(fp)
+      if (!fpArr || fpArr.length <= 0) return
+      fpArr.forEach(fp => {
+        addFilePath(fp)
+      })
+
+      const hasEncFiles = fpArr.some(fp => fp.endsWith('.enc'))
+      const hasNonEncFiles = fpArr.some(fp => !fp.endsWith('.enc'))
+
+      if (hasEncFiles && hasNonEncFiles) {
+        return toast.error(t('encryption.mixed_file_types'), {
+          duration: 6000,
+        })
+      }
+
       if (passwordInputRef.current) {
         passwordInputRef.current.focus()
       }
@@ -73,7 +87,6 @@ export default function Encryption() {
         duration: 6000,
       })
     } catch (e) {
-      console.error(e)
       const error = e as unknown as { message: string }
       toast.error(error.message, {
         duration: 6000,
@@ -82,44 +95,69 @@ export default function Encryption() {
   }
 
   const handleReset = () => {
-    setFilePath(null)
+    resetFilePaths()
     setShowPassword(false)
     setPassword('')
-    setProgress(0)
+    resetProgress()
     toast.info(t('encryption.reset_message'), {
       duration: 6000,
     })
   }
 
   const handleEncrypt = async () => {
-    await listen('encryption_progress', e =>
-      setProgress(Math.floor(e.payload as number))
-    )
-    toast
-      .promise(() => invoke('encrypt_file', { filePath, password }), {
-        loading: t('encryption.encrypt_processing'),
-        success: res => {
-          const encRes = res as EncryptionResponse
-          addLog({
-            type: 'success',
-            variant: encRes.type_,
-            timestamp: encRes.timestamp,
-            filePath: encRes.file_path,
-          })
-          return getResponseMessage(encRes.type_, encRes.file_path, t)
-        },
-        error: res => {
-          const encRes = res as EncryptionError
-          addLog({
-            type: 'error',
-            variant: encRes.type_,
-            timestamp: encRes.timestamp,
-          })
-          return getErrorMessage(encRes.type_, t)
-        },
-        duration: 6000,
+    if (filePaths.length <= 0 || isProcessing) return
+
+    setIsProcessing(true)
+
+    const promises = filePaths.map(filePath => {
+      addProgress(filePath)
+
+      return new Promise<void>((resolve, reject) => {
+        const eventName = `encryption_progress_${filePath.replace(
+          /[^a-zA-Z0-9\-/:_]/g,
+          '_'
+        )}`
+
+        listen(eventName, e => {
+          setProgress(Math.floor(e.payload as number), filePath)
+        }).catch(e => {
+          toast.error(e, { duration: 6000 })
+          reject()
+        })
+
+        toast.promise(() => invoke('encrypt_file', { filePath, password }), {
+          success: res => {
+            const encRes = res as EncryptionResponse
+            addLog({
+              type: 'success',
+              variant: encRes.type_,
+              timestamp: encRes.timestamp,
+              filePath: encRes.file_path,
+            })
+            resolve()
+            return getResponseMessage(encRes.type_, encRes.file_path, t)
+          },
+          error: res => {
+            const encRes = res as EncryptionError
+            addLog({
+              type: 'error',
+              variant: encRes.type_,
+              timestamp: encRes.timestamp,
+            })
+            setPassword('')
+            setShowPassword(false)
+            if (passwordInputRef.current) {
+              passwordInputRef.current.focus()
+            }
+            reject()
+            return getErrorMessage(encRes.type_, t)
+          },
+          duration: 6000,
+        })
       })
-      .unwrap()
+    })
+
+    await Promise.all(promises)
       .then(() => {
         handleReset()
       })
@@ -131,41 +169,69 @@ export default function Encryption() {
         }
       })
       .finally(() => {
+        resetProgress()
         setIsProcessing(false)
-        setProgress(0)
       })
-    setIsProcessing(true)
   }
 
   const handleDecrypt = async () => {
-    await listen('decryption_progress', e =>
-      setProgress(Math.floor(e.payload as number))
-    )
-    toast
-      .promise(() => invoke('decrypt_file', { filePath, password }), {
-        loading: t('encryption.decrypt_processing'),
-        success: res => {
-          const encRes = res as EncryptionResponse
-          addLog({
-            type: 'success',
-            variant: encRes.type_,
-            timestamp: encRes.timestamp,
-            filePath: encRes.file_path,
-          })
-          return getResponseMessage(encRes.type_, encRes.file_path, t)
-        },
-        error: res => {
-          const encRes = res as EncryptionError
-          addLog({
-            type: 'error',
-            variant: encRes.type_,
-            timestamp: encRes.timestamp,
-          })
-          return getErrorMessage(encRes.type_, t)
-        },
-        duration: 6000,
+    if (filePaths.length <= 0 || isProcessing) return
+
+    setIsProcessing(true)
+
+    const promises = filePaths.map(filePath => {
+      addProgress(filePath)
+
+      return new Promise<void>((resolve, reject) => {
+        const eventName = `decryption_progress_${filePath.replace(
+          /[^a-zA-Z0-9\-/:_]/g,
+          '_'
+        )}`
+
+        listen(eventName, e => {
+          if ((e.payload as number) > 98) {
+            console.log(e.payload)
+          }
+          setProgress(Math.floor(e.payload as number), filePath)
+        }).catch(e => {
+          toast.error(e, { duration: 6000 })
+          reject()
+        })
+
+        toast.promise(() => invoke('decrypt_file', { filePath, password }), {
+          success: res => {
+            const encRes = res as EncryptionResponse
+            addLog({
+              type: 'success',
+              variant: encRes.type_,
+              timestamp: encRes.timestamp,
+              filePath: encRes.file_path,
+            })
+            setProgress(100, filePath)
+            resolve()
+            return getResponseMessage(encRes.type_, encRes.file_path, t)
+          },
+          error: res => {
+            const encRes = res as EncryptionError
+            addLog({
+              type: 'error',
+              variant: encRes.type_,
+              timestamp: encRes.timestamp,
+            })
+            setPassword('')
+            setShowPassword(false)
+            if (passwordInputRef.current) {
+              passwordInputRef.current.focus()
+            }
+            reject()
+            return getErrorMessage(encRes.type_, t)
+          },
+          duration: 6000,
+        })
       })
-      .unwrap()
+    })
+
+    await Promise.all(promises)
       .then(() => {
         handleReset()
       })
@@ -177,17 +243,16 @@ export default function Encryption() {
         }
       })
       .finally(() => {
+        resetProgress()
         setIsProcessing(false)
-        setProgress(0)
       })
-    setIsProcessing(true)
   }
 
   useEffect(() => {
-    if (filePath && passwordInputRef.current) {
+    if (filePaths.length > 0 && passwordInputRef.current) {
       passwordInputRef.current.focus()
     }
-  }, [filePath])
+  }, [filePaths.length])
 
   return (
     <form
@@ -210,7 +275,11 @@ export default function Encryption() {
             isProcessing ? 'cursor-default' : 'cursor-pointer'
           } text-ellipsis text-nowrap overflow-x-hidden grow`}
         >
-          {filePath ?? t('encryption.select_file')}
+          {filePaths.length === 1
+            ? filePaths[0]
+            : filePaths.length > 1
+            ? 'Multiple files'
+            : t('encryption.select_file')}
         </span>
       </div>
       <div className='flex items-center w-full bg-slate-700 dark:bg-slate-800 dark:text-slate-200 text-white h-12 rounded-md shadow-md'>
@@ -252,58 +321,87 @@ export default function Encryption() {
 
       <div className='w-full flex items-center'>
         <Button
-          type={filePath && filePath.endsWith('.enc') ? 'button' : 'submit'}
+          type={
+            filePaths.length > 0 && filePaths.every(fp => fp.endsWith('.enc'))
+              ? 'button'
+              : 'submit'
+          }
           onClick={handleEncrypt}
           size='lg'
           className={`transition-all duration-200 ${
-            filePath && filePath.endsWith('.enc')
+            filePaths.length > 0 && filePaths.every(fp => fp.endsWith('.enc'))
               ? 'p-0 h-0 w-0 scale-0 m-0'
               : 'grow mr-1'
           }`}
-          disabled={!passwordValidation.success || isProcessing || !filePath}
+          disabled={
+            !passwordValidation.success || isProcessing || filePaths.length <= 0
+          }
         >
           {t('encryption.encrypt')}
         </Button>
         <Button
-          type={filePath && !filePath.endsWith('.enc') ? 'button' : 'submit'}
+          type={
+            filePaths.length > 0 && filePaths.every(fp => !fp.endsWith('.enc'))
+              ? 'button'
+              : 'submit'
+          }
           onClick={handleDecrypt}
           size='lg'
           className={`transition-all duration-200 ${
-            filePath && !filePath.endsWith('.enc')
+            filePaths.length > 0 && filePaths.every(fp => !fp.endsWith('.enc'))
               ? 'p-0 h-0 w-0 scale-0 m-0'
-              : filePath?.endsWith('.enc')
+              : filePaths.every(fp => fp.endsWith('.enc'))
               ? 'grow mr-1'
               : 'grow mx-1'
           }`}
-          disabled={isProcessing || !filePath}
+          disabled={isProcessing || filePaths.length <= 0}
         >
           {t('encryption.decrypt')}
         </Button>
         <Button
           size='lg'
           className='transition-all duration-200 grow ml-1'
-          disabled={isProcessing || (!filePath && password.length <= 0)}
+          disabled={
+            isProcessing || (filePaths.length <= 0 && password.length <= 0)
+          }
           onClick={handleReset}
           variant='destructive'
         >
           {t('encryption.reset')}
         </Button>
       </div>
-      <div className='overflow-hidden'>
-        <Progress
-          className={`${
-            isProcessing ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-200`}
-          value={progress}
-          indicatorColor='bg-slate-700 dark:bg-slate-800'
-        />
+      <div className='overflow-hidden flex flex-col gap-4'>
+        {progress.map((p, i) => (
+          <div key={p.key} className='flex flex-col gap-1'>
+            <span className='flex items-center gap-2'>
+              <span>
+                {p.value < 100 && (
+                  <ClipLoader color='#1e293b' size={20} className='' />
+                )}
+                {p.value >= 100 && (
+                  <span>
+                    <TickIcon />
+                  </span>
+                )}
+              </span>
+              {filePaths[i]}
+            </span>
+            <Progress
+              className={`${
+                isProcessing ? 'opacity-100' : 'opacity-0'
+              } transition-opacity duration-200`}
+              value={p.value}
+              indicatorColor='bg-slate-700 dark:bg-slate-800'
+            />
+          </div>
+        ))}
       </div>
       <div
         className={`flex flex-col text-sm list-disc w-fit ${
           password.length > 0 ? 'opacity-100' : 'opacity-0'
         } transition-all duration-200`}
       >
-        {!filePath?.endsWith('.enc') &&
+        {filePaths.every(fp => !fp.endsWith('.enc')) &&
           !passwordValidation.success &&
           passwordValidation.error.issues.map(
             (issue: ZodIssue, index: number) => (

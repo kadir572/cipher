@@ -5,7 +5,6 @@ use std::env;
 use std::fs::{File, remove_file};
 use std::io::{BufReader, Read, Write};
 use std::path::Path;
-use std::time::Instant;
 use chrono::Local;
 
 use orion::hazardous::{
@@ -166,7 +165,6 @@ const CHUNK_SIZE: usize = 16384;
 
 #[tauri::command]
 async fn encrypt_file(app: AppHandle, file_path: &str, password: &str) -> Result<EncryptionResponse, EncryptionError> {
-    let start_time = Instant::now();
     // ***********************************************************
     // PASSWORD VALIDATION START
     // ***********************************************************
@@ -244,14 +242,29 @@ async fn encrypt_file(app: AppHandle, file_path: &str, password: &str) -> Result
         }
 
         let progress = ((index + 1) as f64 / total_chunks as f64) * 100.0;
-        app.emit("encryption_progress", progress).unwrap();
+
+        println!("Encrypting file: {} | Chunk {}/{} | Progress: {:.2}%", 
+        file_path, 
+        index + 1, 
+        total_chunks, 
+        progress);
+
+        let event_name = format!(
+            "encryption_progress_{}",
+            file_path
+                .chars()
+                .map(|c| {
+                    if c.is_alphanumeric() || c == '-' || c == '/' || c == ':' || c == '_' {
+                        c
+                    } else {
+                        '_'
+                    }
+                })
+                .collect::<String>()
+        );
+
+        app.emit(&event_name, progress).unwrap();
     }
-
-    let elapsed_time = start_time.elapsed();
-    let elapsed_seconds = elapsed_time.as_secs_f64(); // Get the elapsed time in seconds
-
-    // Log the elapsed time
-    println!("Encryption completed in {:.2} seconds", elapsed_seconds);
 
     Ok(EncryptionResponse {
         type_: "encryption_successful".to_string(),
@@ -330,7 +343,22 @@ async fn decrypt_file(app: AppHandle, file_path: &str, password: &str) -> Result
         }   
 
         let progress = ((index + 1) as f64 / total_chunks as f64) * 100.0;
-        app.emit("decryption_progress", progress).unwrap(); 
+
+        let event_name = format!(
+            "decryption_progress_{}",
+            file_path
+                .chars()
+                .map(|c| {
+                    if c.is_alphanumeric() || c == '-' || c == '/' || c == ':' || c == '_' {
+                        c
+                    } else {
+                        '_'
+                    }
+                })
+                .collect::<String>()
+        );
+
+        app.emit(&event_name, progress).unwrap(); 
     
     }
 

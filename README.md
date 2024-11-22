@@ -89,9 +89,12 @@ Make sure to follow the style and formatting guidelines to ensure the project re
 - Dark theme.
 - Multi-language support (en, de, it, fr, pl, tr, ar, es, zh, pt, ru, ja, ko, hi), generated using Chat-GPT (GPT-3.5).
 
+### Version 0.2.0 (Nov 22, 2024)
+
+- Async multi-file support for encryption and decryption.
+
 ## Roadmap
 
-- Add async multi-file encryption and decryption.
 - Improve password strength checks.
 - Improve user interface with better file management.
 - Add support for additional encryption algorithms (RSA, SHA-256, etc.).

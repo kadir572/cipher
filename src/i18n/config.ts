@@ -14,13 +14,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Encrypt',
           decrypt: 'Decrypt',
-          select_file: 'Select file',
+          select_file: 'Select file(s)',
           password_placeholder: 'Encryption key',
           reset_message: 'Encryption form has been reset!',
           encrypt_processing: 'Encrypting...',
           decrypt_processing: 'Decrypting...',
-          uploaded: 'File uploaded',
+          uploaded: 'File(s) uploaded',
           reset: 'Reset',
+          mixed_file_types:
+            'Files are mixed. All should either have .enc or none.',
         },
         language: {
           select: 'Select language',
@@ -98,13 +100,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Verschlüsseln',
           decrypt: 'Entschlüsseln',
-          select_file: 'Datei auswählen',
+          select_file: 'Datei(en) auswählen',
           password_placeholder: 'Verschlüsselungsschlüssel',
           reset_message: 'Das Verschlüsselungsformular wurde zurückgesetzt!',
           encrypt_processing: 'Wird verschlüsselt...',
           decrypt_processing: 'Wird entschlüsselt...',
-          uploaded: 'Datei hochgeladen',
+          uploaded: 'Datei(en) hochgeladen',
           reset: 'Zurücksetzen',
+          mixed_file_types:
+            'Dateien sind gemischt. Alle sollten entweder .enc haben oder keines.',
         },
         reset: 'Reset',
         language: {
@@ -189,8 +193,10 @@ i18n.use(initReactI18next).init({
           reset_message: 'Il modulo di crittografia è stato reimpostato!',
           encrypt_processing: 'Crittografia in corso...',
           decrypt_processing: 'Decrittografia in corso...',
-          uploaded: 'File caricato',
+          uploaded: 'File(s) caricato',
           reset: 'Reimposta',
+          mixed_file_types:
+            'I file sono misti. Devono avere tutti .enc o nessuno.',
         },
         language: {
           select: 'Seleziona lingua',
@@ -268,13 +274,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Chiffrer',
           decrypt: 'Déchiffrer',
-          select_file: 'Sélectionner le fichier',
+          select_file: 'Sélectionner le(s) fichier(s)',
           password_placeholder: 'Clé de chiffrement',
           reset_message: 'Le formulaire de chiffrement a été réinitialisé !',
           encrypt_processing: 'Chiffrement en cours...',
           decrypt_processing: 'Déchiffrement en cours...',
-          uploaded: 'Fichier téléchargé',
+          uploaded: 'Fichier(s) téléchargé(s)',
           reset: 'Réinitialiser',
+          mixed_file_types:
+            'Les fichiers sont mélangés. Tous doivent avoir .enc ou aucun.',
         },
         language: {
           select: 'Sélectionner la langue',
@@ -354,13 +362,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Szyfrować',
           decrypt: 'Deszyfrować',
-          select_file: 'Wybierz plik',
+          select_file: 'Wybierz plik(i)',
           password_placeholder: 'Klucz szyfrowania',
           reset_message: 'Formularz szyfrowania został zresetowany!',
           encrypt_processing: 'Szyfrowanie w toku...',
           decrypt_processing: 'Deszyfrowanie w toku...',
-          uploaded: 'Plik przesłany',
+          uploaded: 'Plik(i) przesłany(e)',
           reset: 'Zresetuj',
+          mixed_file_types:
+            'Pliki są pomieszane. Wszystkie muszą mieć .enc lub żadne.',
         },
         language: {
           select: 'Wybierz język',
@@ -438,13 +448,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Şifrele',
           decrypt: 'Şifreyi Çöz',
-          select_file: 'Dosya Seç',
+          select_file: 'Dosya(ları) seç',
           password_placeholder: 'Şifreleme anahtarı',
           reset_message: 'Şifreleme formu sıfırlandı!',
           encrypt_processing: 'Şifreleme yapılıyor...',
           decrypt_processing: 'Şifre çözülüyor...',
-          uploaded: 'Dosya yüklendi',
+          uploaded: 'Dosya(lar) yüklendi',
           reset: 'Sıfırla',
+          mixed_file_types:
+            'Dosyalar karışık. Hepsinin .enc uzantısı olmalı ya da hiçbirinin olmamalı.',
         },
         language: {
           select: 'Dil Seç',
@@ -521,13 +533,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'تشفير',
           decrypt: 'فك التشفير',
-          select_file: 'اختيار ملف',
+          select_file: 'اختر الملف(ات)',
           password_placeholder: 'مفتاح التشفير',
           reset_message: 'تم إعادة تعيين نموذج التشفير!',
           encrypt_processing: 'يتم التشفير...',
           decrypt_processing: 'يتم فك التشفير...',
-          uploaded: 'تم رفع الملف',
+          uploaded: 'تم رفع الملف(ات)',
           reset: 'إعادة تعيين',
+          mixed_file_types:
+            'الملفات مختلطة. يجب أن تحتوي جميعها على .enc أو لا تحتوي أي منها.',
         },
         language: {
           select: 'اختيار اللغة',
@@ -605,13 +619,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Cifrar',
           decrypt: 'Descifrar',
-          select_file: 'Seleccionar archivo',
+          select_file: 'Seleccionar archivo(s)',
           password_placeholder: 'Clave de cifrado',
           reset_message: '¡El formulario de cifrado ha sido restablecido!',
           encrypt_processing: 'Cifrado...',
           decrypt_processing: 'Descifrado...',
-          uploaded: 'Archivo cargado',
+          uploaded: 'Archivo(s) cargado(s)',
           reset: 'Restablecer',
+          mixed_file_types:
+            'Los archivos están mezclados. Todos deben tener .enc o ninguno.',
         },
         language: {
           select: 'Seleccionar idioma',
@@ -696,6 +712,7 @@ i18n.use(initReactI18next).init({
           decrypt_processing: '解密中...',
           uploaded: '文件已上传',
           reset: '重置',
+          mixed_file_types: '文件混合。所有文件要么都有 .enc，要么都没有。',
         },
         language: {
           select: '选择语言',
@@ -772,13 +789,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Criptografar',
           decrypt: 'Descriptografar',
-          select_file: 'Selecionar arquivo',
+          select_file: 'Selecionar arquivo(s)',
           password_placeholder: 'Chave de criptografia',
           reset_message: 'O formulário de criptografia foi resetado!',
           encrypt_processing: 'Criptografando...',
           decrypt_processing: 'Descriptografando...',
-          uploaded: 'Arquivo carregado',
+          uploaded: 'Arquivo(s) carregado(s)',
           reset: 'Resetar',
+          mixed_file_types:
+            'Os arquivos estão misturados. Todos devem ter .enc ou nenhum.',
         },
         language: {
           select: 'Selecionar idioma',
@@ -857,13 +876,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'Шифровать',
           decrypt: 'Дешифровать',
-          select_file: 'Выбрать файл',
+          select_file: 'Выбрать файл(ы)',
           password_placeholder: 'Ключ шифрования',
           reset_message: 'Форма шифрования сброшена!',
           encrypt_processing: 'Шифруется...',
           decrypt_processing: 'Дешифруется...',
-          uploaded: 'Файл загружен',
+          uploaded: 'Файл(ы) загружен(ы)',
           reset: 'Сбросить',
+          mixed_file_types:
+            'Файлы смешаны. Все должны иметь .enc или ни один не должен.',
         },
         language: {
           select: 'Выбрать язык',
@@ -949,6 +970,8 @@ i18n.use(initReactI18next).init({
           decrypt_processing: '復号化中...',
           uploaded: 'ファイルがアップロードされました',
           reset: 'リセット',
+          mixed_file_types:
+            'ファイルが混在しています。全てが .enc 拡張子を持つか、持たないかにしてください。',
         },
         language: {
           select: '言語を選択',
@@ -1032,8 +1055,10 @@ i18n.use(initReactI18next).init({
           reset_message: '암호화 양식이 초기화되었습니다!',
           encrypt_processing: '암호화 중...',
           decrypt_processing: '복호화 중...',
-          uploaded: '파일 업로드 완료',
+          uploaded: '파일이 업로드되었습니다',
           reset: '초기화',
+          mixed_file_types:
+            '파일이 혼합되었습니다. 모두 .enc 확장자를 가지거나, 아무것도 가지지 않아야 합니다.',
         },
         language: {
           select: '언어 선택',
@@ -1111,13 +1136,15 @@ i18n.use(initReactI18next).init({
         encryption: {
           encrypt: 'एन्क्रिप्ट',
           decrypt: 'डिक्रिप्ट',
-          select_file: 'फाइल चुनें',
+          select_file: 'फ़ाइल(फ़ाइलें) चुनें',
           password_placeholder: 'एन्क्रिप्शन कुंजी',
           reset_message: 'एन्क्रिप्शन फॉर्म रीसेट हो गया है!',
           encrypt_processing: 'एन्क्रिप्ट हो रहा है...',
           decrypt_processing: 'डिक्रिप्ट हो रहा है...',
-          uploaded: 'फाइल अपलोड हो गई है',
+          uploaded: 'फ़ाइल(फ़ाइलें) अपलोड हो गई हैं',
           reset: 'रीसेट',
+          mixed_file_types:
+            'फाइलें मिश्रित हैं। सभी में .enc एक्सटेंशन होना चाहिए या कोई भी नहीं होना चाहिए।',
         },
         language: {
           select: 'भाषा चुनें',
