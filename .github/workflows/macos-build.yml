@@ -1,4 +1,4 @@
-name: Build App for Multiple Platforms
+name: macos-build
 
 on:
   # push:
@@ -18,12 +18,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -58,7 +58,7 @@ jobs:
           cargo tauri build --bundles app
 
       - name: Upload macOS Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-app-build
           path: src-tauri/target/release/bundle/macos/cipher.app
@@ -76,10 +76,10 @@ jobs:
 
   #   steps:
   #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v4
 
   #     - name: Install Node.js
-  #       uses: actions/setup-node@v3
+  #       uses: actions/setup-node@v4
   #       with:
   #         node-version: 20 # Adjust based on your project's needs
 
@@ -106,7 +106,7 @@ jobs:
   #         cargo tauri build --bundles app
 
   #     - name: Upload macOS Build Artifact
-  #       uses: actions/upload-artifact@v3
+  #       uses: actions/upload-artifact@v4
   #       with:
   #         name: macos-app-build
   #         path: src-tauri/target/release/bundle/macos/cipher.app
