@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macos-app-build
-          path: src-tauri/target/releases/bundle/macos/cipher.app
+          path: src-tauri/target/release/bundle/macos/cipher.app
 
   # build-linux:
   #   runs-on: ubuntu-latest
