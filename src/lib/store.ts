@@ -85,3 +85,43 @@ export const useLogStore = create<LogState>(set => ({
       logs: [],
     })),
 }))
+
+export type ThemeState = {
+  isDarkMode: boolean
+  toggleDarkMode: (isDarkMode?: boolean) => void
+}
+
+export const useThemeStore = create<ThemeState>(set => ({
+  isDarkMode: JSON.parse(localStorage.getItem('isDarkMode') ?? 'false'),
+  toggleDarkMode: (isDarkMode?: boolean) =>
+    set(state => {
+      if (isDarkMode !== undefined) {
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        return {
+          isDarkMode,
+        }
+      } else {
+        document.documentElement.classList.toggle('dark', !state.isDarkMode)
+      }
+      return {
+        isDarkMode: !state.isDarkMode,
+      }
+    }),
+}))
+
+export type StripeState = {
+  clientSecret: string | null
+  setClientSecret: (clientSecret: string | null) => void
+}
+
+export const useStripeStore = create<StripeState>(set => ({
+  clientSecret: null,
+  setClientSecret: clientSecret =>
+    set({
+      clientSecret,
+    }),
+}))

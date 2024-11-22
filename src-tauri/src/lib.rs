@@ -1,3 +1,7 @@
+use dotenv::dotenv;
+use reqwest::Client;
+use serde_json::Value;
+use std::env;
 use std::fs::{File, remove_file};
 use std::io::{BufReader, Read, Write};
 use std::path::Path;
@@ -338,6 +342,71 @@ async fn decrypt_file(app: AppHandle, file_path: &str, password: &str) -> Result
 }
 
 
+#[derive(Serialize)]
+struct StripeResponse {
+    client_secret: String,
+    amount: u64,
+    currency: String
+}
+
+#[derive(Serialize)]
+struct StripeError {
+    code: String,
+    message: String,
+    param: Option<String>,
+    doc_url: String,
+}
+
+#[tauri::command]
+async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeResponse, StripeError> {
+    dotenv().ok();
+    // load stripe secret key
+    let stripe_secret_key = env::var("STRIPE_SECRET_KEY").map_err(|_| StripeError {
+        code: "missing_secret_key".to_string(),
+        message: "STRIPE_SECRET_KEY must be in the .env file".to_string(),
+        param: None,
+        doc_url: String::new(),
+    })?;
+
+    let payment_data = [
+        ("amount", amount.to_string()),
+        ("currency", currency.to_string()),
+        ("payment_method_types[]", "card".to_string()),
+        ("payment_method_types[]", "twint".to_string()),
+    ];
+
+    let client = Client::new();
+
+    let response = client.post("https://api.stripe.com/v1/payment_intents").basic_auth(&stripe_secret_key, Some("")).form(&payment_data).send().await.map_err(|e| StripeError {
+        code: "network_error".to_string(),
+        message: format!("Error creating payment intent: {}", e),
+        param: None,
+        doc_url: String::new(),
+    })?;
+
+    let json: Value = response.json().await.map_err(|e| StripeError {
+        code: "json_parse_error".to_string(),
+        message: format!("Error parsing JSON response: {}", e),
+        param: None,
+        doc_url: String::new(),
+    })?;
+    println!("JSON response: {:?}", json);
+
+    if let Some(client_secret) = json["client_secret"].as_str() {
+        Ok(StripeResponse {
+            client_secret: client_secret.to_string(),
+            amount,
+            currency: currency.to_string(),
+        })
+    } else {
+        Err(StripeError {
+            code: json["error"]["code"].as_str().unwrap_or("unknown").to_string(),
+            message: json["error"]["message"].as_str().unwrap_or("Unknown error").to_string(),
+            param: json["error"]["param"].as_str().map(|s| s.to_string()),
+            doc_url: json["error"]["doc_url"].as_str().unwrap_or("").to_string(),
+        })
+    }
+}
 
 
 
@@ -345,7 +414,7 @@ async fn decrypt_file(app: AppHandle, file_path: &str, password: &str) -> Result
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file])
+        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

@@ -45,6 +45,38 @@ export default function LanguageSwitcher() {
       label: 'Türkçe (Turkish)',
       value: 'tr',
     },
+    {
+      label: 'العربية (Arabic)',
+      value: 'ar',
+    },
+    {
+      label: 'Español (Spanish)',
+      value: 'es',
+    },
+    {
+      label: '简体中文 (Chinese - Simplified)',
+      value: 'zh',
+    },
+    {
+      label: 'Português (Portuguese)',
+      value: 'pt',
+    },
+    {
+      label: 'Русский (Russian)',
+      value: 'ru',
+    },
+    {
+      label: '日本語 (Japanese)',
+      value: 'ja',
+    },
+    {
+      label: '한국어 (Korean)',
+      value: 'ko',
+    },
+    {
+      label: 'हिन्दी (Hindi)',
+      value: 'hi',
+    },
   ]
 
   const [open, setOpen] = useState<boolean>(false)
@@ -59,7 +91,7 @@ export default function LanguageSwitcher() {
           variant='outline'
           role='combobox'
           aria-expanded={open}
-          className='w-[200px] justify-between'
+          className='w-[200px] justify-between dark:bg-slate-800'
         >
           {value
             ? languages.find(l => l.value === value)?.label
@@ -68,7 +100,7 @@ export default function LanguageSwitcher() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0'>
-        <Command>
+        <Command className='dark:bg-slate-800'>
           <CommandInput placeholder={t('language.search')} className='h-9' />
           <CommandList>
             <CommandEmpty>{t('langauge.empty')}</CommandEmpty>

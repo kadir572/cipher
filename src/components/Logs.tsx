@@ -4,10 +4,12 @@ import { ColumnDef } from '@tanstack/react-table'
 import { getErrorMessage, getResponseMessage } from '@/lib/utils'
 import { ErrorType, SuccessType } from '@/lib/types/encryption'
 import { useTranslation } from 'react-i18next'
+import { Button } from './ui/button'
+import { toast } from 'sonner'
 
 export default function Logs() {
   const { t } = useTranslation()
-  const { logs } = useLogStore()
+  const { logs, resetLogs } = useLogStore()
 
   const columns: ColumnDef<Log>[] = [
     {
@@ -29,5 +31,20 @@ export default function Logs() {
       cell: info => info.getValue(),
     },
   ]
-  return <LogsTable columns={columns} data={logs}></LogsTable>
+
+  const handleResetLogs = () => {
+    toast.info('Logs have been cleared', { duration: 6000 })
+    resetLogs()
+  }
+  return (
+    <div className='pt-8'>
+      <div className='flex items-center justify-end gap-2'>
+        <Button disabled={logs.length <= 0} onClick={handleResetLogs}>
+          Clear
+        </Button>
+        <Button disabled={logs.length <= 0}>Download</Button>
+      </div>
+      <LogsTable columns={columns} data={logs}></LogsTable>
+    </div>
+  )
 }

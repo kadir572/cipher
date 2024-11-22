@@ -7,9 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "tauri-build": "tauri build",
-    "tauri-build-win": "tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
@@ -19,8 +17,11 @@
     "@radix-ui/react-scroll-area": "^1.2.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
+    "@stripe/react-stripe-js": "^3.0.0",
+    "@stripe/stripe-js": "^5.2.0",
     "@tanstack/react-table": "^8.20.5",
     "@tauri-apps/plugin-dialog": "^2.0.1",
     "class-variance-authority": "^0.7.0",

@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getErrorMessage(type: ErrorType, t: (key: string) => string) {
+export function getErrorMessage(
+  type: ErrorType,
+  t: (key: string) => string
+): string {
   switch (type) {
     case 'decryption_failed':
       return t('error_messages.decryption_failed')
@@ -41,7 +44,7 @@ export function getResponseMessage(
   type: SuccessType,
   filePath: string,
   t: (key: string) => string
-) {
+): string {
   switch (type) {
     case 'encryption_successful':
       return `${t('success_messages.encryption')} ${filePath}`

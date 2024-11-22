@@ -31,12 +31,12 @@ export default function LogsTable<TData extends { type: string }, TValue>({
   })
 
   return (
-    <Table>
+    <Table className='dark:text-slate-200'>
       <TableHeader>
         {table.getHeaderGroups().map(headerGroup => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map(header => (
-              <TableHead key={header.id}>
+              <TableHead key={header.id} className='dark:text-slate-300'>
                 {header.isPlaceholder
                   ? null
                   : flexRender(
@@ -54,7 +54,9 @@ export default function LogsTable<TData extends { type: string }, TValue>({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
-              className={`${index % 2 === 1 ? 'bg-slate-100' : ''}`}
+              className={`${
+                index % 2 === 1 ? 'bg-slate-100 dark:bg-slate-600' : ''
+              }`}
             >
               {row.getVisibleCells().map((cell, index) => (
                 <TableCell

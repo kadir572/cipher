@@ -19,6 +19,10 @@ import { Progress } from './ui/progress'
 import { listen } from '@tauri-apps/api/event'
 import { z, ZodIssue } from 'zod'
 import { useTranslation } from 'react-i18next'
+import FileUploadIcon from './icons/FileUploadIcon'
+import LockIcon from './icons/LockIcon'
+import ShowPasswordIcon from './icons/ShowPasswordIcon'
+import HidePasswordIcon from './icons/HidePasswordIcon'
 
 export default function Encryption() {
   const { t } = useTranslation()
@@ -190,27 +194,14 @@ export default function Encryption() {
       onSubmit={e => e.preventDefault()}
       className='pt-8 flex flex-col gap-2 max-w-[36rem] mx-auto'
     >
-      <div className='flex items-center w-full bg-slate-700 rounded-md shadow-md text-white h-12'>
+      <div className='flex items-center w-full bg-slate-700 dark:bg-slate-800 dark:text-slate-200 rounded-md shadow-md text-white h-12'>
         <span
           onClick={handleClick}
           className={`px-3 ${
             isProcessing ? 'cursor-default' : 'cursor-pointer'
           }`}
         >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 24 24'
-            strokeWidth={1.5}
-            stroke='currentColor'
-            className='size-6'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z'
-            />
-          </svg>
+          <FileUploadIcon />
         </span>
         <Separator orientation='vertical' />
         <span
@@ -222,7 +213,7 @@ export default function Encryption() {
           {filePath ?? t('encryption.select_file')}
         </span>
       </div>
-      <div className='flex items-center w-full bg-slate-700 text-white h-12 rounded-md shadow-md'>
+      <div className='flex items-center w-full bg-slate-700 dark:bg-slate-800 dark:text-slate-200 text-white h-12 rounded-md shadow-md'>
         <Label
           className={`px-3 ${
             isProcessing ? 'cursor-default' : 'cursor-pointer'
@@ -230,20 +221,7 @@ export default function Encryption() {
           htmlFor='password'
         >
           <span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='size-6'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z'
-              />
-            </svg>
+            <LockIcon />
           </span>
         </Label>
         <Separator orientation='vertical' />
@@ -253,7 +231,7 @@ export default function Encryption() {
             readOnly={isProcessing}
             ref={passwordInputRef}
             id='password'
-            className='border-transparent focus:border-white/50 focus-visible:ring-0 placeholder:text-slate-300 px-2 mx-1 placeholder:text-base'
+            className='border-transparent focus:border-white/50 dark:focus:border-slate-200/50 focus-visible:ring-0 dark:focus-visible::ring-0 placeholder:text-slate-300 px-2 mx-1 placeholder:text-base'
             type={showPassword ? 'text' : 'password'}
             placeholder={t('encryption.password_placeholder')}
             onChange={e => setPassword(e.target.value)}
@@ -264,45 +242,10 @@ export default function Encryption() {
             type='button'
             disabled={password.length <= 0 || isProcessing}
             onClick={() => setShowPassword()}
-            className='px-3 cursor-pointer disabled:text-slate-400 disabled:cursor-auto'
+            className='px-3 cursor-pointer disabled:text-slate-400  disabled:cursor-auto dark:text-slate-200'
           >
-            {!showPassword && (
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='size-6'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z'
-                />
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'
-                />
-              </svg>
-            )}
-            {showPassword && (
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='size-6'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88'
-                />
-              </svg>
-            )}
+            {!showPassword && <ShowPasswordIcon />}
+            {showPassword && <HidePasswordIcon />}
           </button>
         </div>
       </div>
@@ -352,7 +295,7 @@ export default function Encryption() {
             isProcessing ? 'opacity-100' : 'opacity-0'
           } transition-opacity duration-200`}
           value={progress}
-          indicatorColor='bg-slate-700'
+          indicatorColor='bg-slate-700 dark:bg-slate-800'
         />
       </div>
       <div
@@ -364,7 +307,10 @@ export default function Encryption() {
           !passwordValidation.success &&
           passwordValidation.error.issues.map(
             (issue: ZodIssue, index: number) => (
-              <li className='transition-all duration-200 transform' key={index}>
+              <li
+                className='transition-all duration-200 transform dark:text-slate-200'
+                key={index}
+              >
                 {issue.message}
               </li>
             )
