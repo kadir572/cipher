@@ -9,16 +9,39 @@ export type Log = {
 }
 
 export type ProgressState = {
-  progress: number
-  setProgress: (num: number) => void
+  progress: { key: string; value: number }[]
+  addProgress: (key: string) => void
+  setProgress: (num: number, key: string) => void
+  resetProgress: () => void
 }
 
 export const useProgressStore = create<ProgressState>(set => ({
-  progress: 0,
-  setProgress: (num: number) =>
-    set(() => ({
-      progress: num,
+  progress: [],
+  addProgress: (key: string) =>
+    set(state => ({
+      progress: [...state.progress, { key, value: 0 }],
     })),
+  setProgress: (num: number, key: string) =>
+    set(state => {
+      return {
+        progress: state.progress.map(p => {
+          if (p.key === key) {
+            return {
+              key,
+              value: num,
+            }
+          }
+          return p
+        }),
+      }
+    }),
+  resetProgress: () =>
+    set(() => {
+      console.log('triggered reset')
+      return {
+        progress: [],
+      }
+    }),
 }))
 
 export type PasswordState = {
@@ -56,15 +79,20 @@ export const useIsProcessingStore = create<IsProcessingStore>(set => ({
 }))
 
 export type FilePathState = {
-  filePath: string | null
-  setFilePath: (filePath: string | null) => void
+  filePaths: string[]
+  addFilePath: (filePath: string) => void
+  resetFilePaths: () => void
 }
 
 export const useFilePathStore = create<FilePathState>(set => ({
-  filePath: null,
-  setFilePath: (filePath: string | null) =>
+  filePaths: [],
+  addFilePath: (filePath: string) =>
+    set(state => ({
+      filePaths: [...state.filePaths, filePath],
+    })),
+  resetFilePaths: () =>
     set(() => ({
-      filePath,
+      filePaths: [],
     })),
 }))
 
