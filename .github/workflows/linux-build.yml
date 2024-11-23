@@ -1,66 +1,135 @@
-name: linux-build
+# name: linux-build
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       branch:
+#         description: 'The branch to build'
+#         required: true
+#         default: 'master'
+
+# jobs:
+#   build-linux:
+#     runs-on: ubuntu-latest
+#     env:
+#       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+#       VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
+#         with:
+#           ref: ${{ github.event.inputs.branch || github.ref }}
+
+#       - name: Install Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+
+#       - name: Install Rust
+#         run: |
+#           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+#           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+#       - name: Install Tauri CLI
+#         run: cargo install tauri-cli
+
+#       - name: Install Linux Dependencies for   Tauri and WebKitGTK
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y \
+#             libwebkit2gtk-4.0-dev \
+#             libjavascriptcoregtk-4.0-dev \
+#             javascriptcoregtk-4.1-dev \
+#             webkit2gtk-4.1-dev \
+#             libgtk-3-dev \
+#             libgdk-pixbuf-2.0-dev \
+#             libayatana-appindicator3-dev \
+#             librsvg2-dev \
+#             libsoup-3.0-dev \
+#             build-essential \
+#             curl \
+#             wget \
+#             libssl-dev
+
+#       - name: Install Project Dependencies
+#         run: npm install
+
+#       - name: Build Linux App with Cargo
+#         run: |
+#           cd src-tauri
+#           cargo tauri build
+
+#       - name: Upload Linux Build Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: linux-app-build
+#           path: src-tauri/target/release/cipher
+
+name: 'publish'
 
 on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'The branch to build'
+        description: The branch to build
         required: true
-        default: 'master'
+        default: master
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
-    env:
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+          - platform 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform}}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || github.ref }}
+      - uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Rust
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
-
-      - name: Install Linux Dependencies for   Tauri and WebKitGTK
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.0-dev \
-            libjavascriptcoregtk-4.0-dev \
-            javascriptcoregtk-4.1-dev \
-            webkit2gtk-4.1-dev \
-            libgtk-3-dev \
-            libgdk-pixbuf-2.0-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev \
-            libsoup-3.0-dev \
-            build-essential \
-            curl \
-            wget \
-            libssl-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+        
+        - name: setup node
+          uses: actions/setup-node@v4
+          with:
+            node-version: lts/*
+            cache: 'npm'
+        
+        - name: install Rust stable
+          uses: dtolnay/rust-toolchain@stable
+          with:
+            targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: Install Project Dependencies
-        run: npm install
+        - name: Rust cache
+          uses: swatinem/rust-cache@v2
+          with:
+            workspaces: './src-tauri -> target'
 
-      - name: Build Linux App with Cargo
-        run: |
-          cd src-tauri
-          cargo tauri build
+        - name: install frontend dependencies
+          run: npm i
 
-      - name: Upload Linux Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-app-build
-          path: src-tauri/target/release/cipher
+        - uses: tauri-apps/tauri-action@v0
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+            VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+          with:
+            tagName: app-v__VERSION__
+            releaseName: 'App v__VERSION__'
+            releaseBoy: 'See the assets to download this version and install.'
+            releaseDraft: true
+            prerelease: false
+            args: ${{ matrix.args }}
