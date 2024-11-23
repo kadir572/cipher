@@ -436,13 +436,26 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
     }
 }
 
+#[tauri::command]
+async fn get_stripe_private_key() -> Result<String, String> {
+    dotenv().ok();
+    println!("Env var before: {:?}", env::var("STRIPE_SECRET_KEY"));
+    match env::var("STRIPE_SECRET_KEY") {
+        Ok(value) => {
+            println!("Env var: {:?}", value);
+            Ok(value)
+        },
+        Err(e) => Err(format!("Failed to retrieve environment variable: {:?}", e))
+    }
+}
+
 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret])
+        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret, get_stripe_private_key])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

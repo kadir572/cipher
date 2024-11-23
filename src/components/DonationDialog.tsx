@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 export default function DonationDialog() {
+  const [secretKey, setSecretKey] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [currency, setCurrency] = useState<string>('CHF')
   const [open, setOpen] = useState<boolean>(false)
@@ -152,11 +153,18 @@ export default function DonationDialog() {
     { value: 'ZMW', decimals: 2 },
   ]
 
-  const handleChangeOpen = (open: boolean) => {
+  const handleChangeOpen = async (open: boolean) => {
     if (!open) {
       setAmount('')
     }
     setOpen(open)
+    try {
+      const key = (await invoke('get_stripe_private_key')) as string
+      console.log(key)
+      setSecretKey(key)
+    } catch (e) {
+      setSecretKey(e as string)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -221,7 +229,10 @@ export default function DonationDialog() {
             <Label className='dark:text-gray-300' htmlFor='amount'>
               {t('donation.currency.label')}
             </Label>
-            <span>{import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}</span>
+            <div className='flex flex-col'>
+              <span>{import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}</span>
+              <span>{secretKey}</span>
+            </div>
             <div className='flex items-center gap-4'>
               <div className='relative'>
                 <Input
