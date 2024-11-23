@@ -1,4 +1,7 @@
 {
+  "plugins": {
+    "env": {}
+  },
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "cipher",
   "version": "0.2.0",
