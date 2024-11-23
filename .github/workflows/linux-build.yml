@@ -58,14 +58,7 @@ jobs:
 
       - name: Set Backend Variables for Rust
         run: |
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> src-tauri/.env
-
-      - name: Check .env file content
-        run: cat src-tauri/.env
-
-      - name: Debug STRIPE_SECRET_KEY
-        run: |
-          echo "STRIPE_SECRET_KEY is set to ${{ secrets.STRIPE_SECRET_KEY }}"
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env
 
       - name: Build Linux App with Cargo
         run: |
