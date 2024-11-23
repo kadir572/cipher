@@ -12,8 +12,17 @@
   "plugins": {
     "fs": {
       "scope": {
-        "allow": [".env", "src-tauri/.env"]
+        "allow": [
+          ".env",
+          "src-tauri/.env",
+          "/.env",
+          "/src-tauri/.env",
+          "../.env"
+        ]
       }
+    },
+    "env": {
+      "STRIPE_SECRET_KEY": "process.env.STRIPE_SECRET_KEY"
     }
   },
   "app": {
