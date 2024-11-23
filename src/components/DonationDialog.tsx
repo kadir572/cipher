@@ -221,6 +221,7 @@ export default function DonationDialog() {
             <Label className='dark:text-gray-300' htmlFor='amount'>
               {t('donation.currency.label')}
             </Label>
+            <span>{import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}</span>
             <div className='flex items-center gap-4'>
               <div className='relative'>
                 <Input
