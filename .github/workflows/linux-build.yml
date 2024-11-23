@@ -60,6 +60,13 @@ jobs:
         run: |
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> src-tauri/.env
 
+      - name: Check .env file content
+        run: cat src-tauri/.env
+
+      - name: Debug STRIPE_SECRET_KEY
+        run: |
+          echo "STRIPE_SECRET_KEY is set to ${{ secrets.STRIPE_SECRET_KEY }}"
+
       - name: Build Linux App with Cargo
         run: |
           cd src-tauri
