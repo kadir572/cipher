@@ -123,14 +123,6 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: npm install # change this to npm or pnpm depending on which one you use.
 
-      - name: Check if STRIPE_SECRET_KEY is set
-        run: |
-          if [ -z "$STRIPE_SECRET_KEY" ]; then
-            echo "STRIPE_SECRET_KEY is not set!"
-          else
-            echo "STRIPE_SECRET_KEY is set."
-          fi
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
