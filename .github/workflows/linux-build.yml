@@ -93,9 +93,6 @@ jobs:
             args: ''
 
     runs-on: ${{ matrix.platform }}
-    env:
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -126,9 +123,19 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: npm install # change this to npm or pnpm depending on which one you use.
 
+      - name: Check if STRIPE_SECRET_KEY is set
+        run: |
+          if [ -z "$STRIPE_SECRET_KEY" ]; then
+            echo "STRIPE_SECRET_KEY is not set!"
+          else
+            echo "STRIPE_SECRET_KEY is set."
+          fi
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
