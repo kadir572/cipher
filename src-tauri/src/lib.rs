@@ -438,7 +438,6 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
 
 #[tauri::command]
 async fn get_stripe_private_key() -> Result<String, String> {
-    dotenv().ok();
     println!("Env var before: {:?}", env::var("STRIPE_SECRET_KEY"));
     match env::var("STRIPE_SECRET_KEY") {
         Ok(value) => {
