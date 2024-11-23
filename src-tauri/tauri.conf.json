@@ -1,7 +1,4 @@
 {
-  "plugins": {
-    "env": {}
-  },
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "cipher",
   "version": "0.2.0",
@@ -11,6 +8,13 @@
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
+  },
+  "plugins": {
+    "fs": {
+      "scope": {
+        "allow": [".env", "src-tauri/.env"]
+      }
+    }
   },
   "app": {
     "windows": [
