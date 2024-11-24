@@ -388,45 +388,62 @@ struct StripeError {
 #[tauri::command]
 async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeResponse, StripeError> {
     dotenv().ok();
-    // load stripe secret key
-    let stripe_secret_key = env::var("STRIPE_SECRET_KEY").map_err(|_| StripeError {
-        code: "missing_secret_key".to_string(),
-        message: "STRIPE_SECRET_KEY must be in the .env file".to_string(),
-        param: None,
-        doc_url: String::new(),
-    })?;
 
-    let payment_data = [
-        ("amount", amount.to_string()),
-        ("currency", currency.to_string()),
-        ("payment_method_types[]", "card".to_string()),
-        ("payment_method_types[]", "twint".to_string()),
-    ];
+    // Access the Vercel environment variable to determine if it's development or production
+    let is_production = match env::var("VERCEL_ENV") {
+        Ok(val) => val == "production", // If it's "production", set the flag to true
+        Err(_) => false, // Default to false (development) if the variable is not set (for local runs)
+    };
 
+    println!("Is production: {:?}", is_production);
+
+    // Set the API URL depending on the environment (using the boolean flag)
+    let api_url = if is_production {
+        "https://cipher-payments-api.vercel.app/create-payment-intent" // Vercel URL for production
+    } else {
+        "http://127.0.0.1:3000/create-payment-intent" // Local URL for development
+    };
+
+    // Create a new HTTP client
     let client = Client::new();
 
-    let response = client.post("https://api.stripe.com/v1/payment_intents").basic_auth(&stripe_secret_key, Some("")).form(&payment_data).send().await.map_err(|e| StripeError {
-        code: "network_error".to_string(),
-        message: format!("Error creating payment intent: {}", e),
-        param: None,
-        doc_url: String::new(),
-    })?;
+    // Prepare the data to be sent to the API
+    let payment_data = serde_json::json!({
+        "amount": amount,
+        "currency": currency,
+    });
 
+    // Send the POST request to your API
+    let response = client
+        .post(api_url)
+        .json(&payment_data)
+        .send()
+        .await
+        .map_err(|e| StripeError {
+            code: "network_error".to_string(),
+            message: format!("Error calling the payment API: {}", e),
+            param: None,
+            doc_url: String::new(),
+        })?;
+
+    // Parse the response
     let json: Value = response.json().await.map_err(|e| StripeError {
         code: "json_parse_error".to_string(),
         message: format!("Error parsing JSON response: {}", e),
         param: None,
         doc_url: String::new(),
     })?;
-    println!("JSON response: {:?}", json);
 
-    if let Some(client_secret) = json["client_secret"].as_str() {
+    // Check if the client_secret is in the response
+    if let Some(client_secret) = json["clientSecret"].as_str() {
+        // Return the response as expected
         Ok(StripeResponse {
             client_secret: client_secret.to_string(),
             amount,
             currency: currency.to_string(),
         })
     } else {
+        // Handle error if client_secret is not returned
         Err(StripeError {
             code: json["error"]["code"].as_str().unwrap_or("unknown").to_string(),
             message: json["error"]["message"].as_str().unwrap_or("Unknown error").to_string(),
@@ -436,18 +453,6 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
     }
 }
 
-#[tauri::command]
-async fn get_stripe_private_key() -> Result<String, String> {
-    dotenv().ok();
-    println!("Env var before: {:?}", env::var("STRIPE_SECRET_KEY"));
-    match env::var("STRIPE_SECRET_KEY") {
-        Ok(value) => {
-            println!("Env var: {:?}", value);
-            Ok(value)
-        },
-        Err(e) => Err(format!("Failed to retrieve environment variable: {:?}", e))
-    }
-}
 
 
 
@@ -455,7 +460,7 @@ async fn get_stripe_private_key() -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret, get_stripe_private_key])
+        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -469,5 +474,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-
