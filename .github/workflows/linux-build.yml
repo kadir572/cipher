@@ -55,6 +55,9 @@ jobs:
         run: |
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" > src-tauri/.env
           echo "Env file created with secrets."
+          ls -a
+          echo "And now inside src-tauri"
+          ls -a src-tauri
 
       - name: Build app
         run: |
