@@ -387,8 +387,8 @@ struct StripeError {
 
 #[tauri::command]
 async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeResponse, StripeError> {
-    dotenv::from_filename(".env").ok();
-        // load stripe secret key
+    dotenv().ok();
+    // load stripe secret key
     let stripe_secret_key = env::var("STRIPE_SECRET_KEY").map_err(|_| StripeError {
         code: "missing_secret_key".to_string(),
         message: "STRIPE_SECRET_KEY must be in the .env file".to_string(),
@@ -438,7 +438,7 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
 
 #[tauri::command]
 async fn get_stripe_private_key() -> Result<String, String> {
-    dotenv::from_filename(".env").ok();
+    dotenv().ok();
     println!("Env var before: {:?}", env::var("STRIPE_SECRET_KEY"));
     match env::var("STRIPE_SECRET_KEY") {
         Ok(value) => {
