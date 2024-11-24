@@ -33,6 +33,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["../.env"]
+    "resources": ["src-tauri/.env"]
   }
 }

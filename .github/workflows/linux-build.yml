@@ -53,8 +53,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" > .env
-          echo "VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}" >> .env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" > src-tauri/.env
           echo "Env file created with secrets."
 
       - name: Build app
