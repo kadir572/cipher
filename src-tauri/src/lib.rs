@@ -390,18 +390,16 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
     dotenv().ok();
 
     // Access the Vercel environment variable to determine if it's development or production
-    let is_production = match env::var("VERCEL_ENV") {
-        Ok(val) => val == "production", // If it's "production", set the flag to true
+    let is_development = match env::var("TAURI_ENV") {
+        Ok(val) => val == "dev", // If it's "production", set the flag to true
         Err(_) => false, // Default to false (development) if the variable is not set (for local runs)
     };
 
-    println!("Is production: {:?}", is_production);
-
     // Set the API URL depending on the environment (using the boolean flag)
-    let api_url = if is_production {
-        "https://cipher-payments-api.vercel.app/create-payment-intent" // Vercel URL for production
-    } else {
+    let api_url = if is_development {
         "http://127.0.0.1:3000/create-payment-intent" // Local URL for development
+    } else {
+        "https://cipher-payments-api.vercel.app/create-payment-intent" // Vercel URL for production
     };
 
     // Create a new HTTP client
