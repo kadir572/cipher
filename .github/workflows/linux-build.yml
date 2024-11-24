@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "Listing the contents of the build directory:"
           # Ensure to list the correct build directory, for example, after a macOS build it could be in `target/release/bundle/dmg`
-          ls -a target/release/bundle
+          ls -a target/
 
       - name: Publish release
         uses: tauri-apps/tauri-action@v0
