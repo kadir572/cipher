@@ -52,20 +52,20 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Create .env file
-        run: |
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" > .env
-          echo "VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}" >> .env
+      # - name: Create .env file
+      #   run: |
+      #     echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" > .env
+      #     echo "VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}" >> .env
 
-      - name: Verify .env file
-        run: |
-          if [ -f src-tauri/.env ]; then
-            echo ".env file exists!"
-            echo "Contents of .env file:"
-            cat src-tauri/.env
-          else
-            echo ".env file does NOT exist!"
-          fi
+      # - name: Verify .env file
+      #   run: |
+      #     if [ -f src-tauri/.env ]; then
+      #       echo ".env file exists!"
+      #       echo "Contents of .env file:"
+      #       cat src-tauri/.env
+      #     else
+      #       echo ".env file does NOT exist!"
+      #     fi
 
       - name: install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
@@ -74,8 +74,8 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          # VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
