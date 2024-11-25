@@ -93,9 +93,11 @@ export default function LanguageSwitcher() {
           aria-expanded={open}
           className='w-[200px] justify-between dark:bg-slate-800'
         >
-          {value
-            ? languages.find(l => l.value === value)?.label
-            : t('language.select')}
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {value
+              ? languages.find(l => l.value === value)?.label
+              : t('language.select')}
+          </span>
           <ChevronsUpDown className='opacity-50' />
         </Button>
       </PopoverTrigger>
@@ -103,7 +105,7 @@ export default function LanguageSwitcher() {
         <Command className='dark:bg-slate-800'>
           <CommandInput placeholder={t('language.search')} className='h-9' />
           <CommandList>
-            <CommandEmpty>{t('langauge.empty')}</CommandEmpty>
+            <CommandEmpty>{t('language.empty')}</CommandEmpty>
             <CommandGroup>
               {languages.map(l => (
                 <CommandItem

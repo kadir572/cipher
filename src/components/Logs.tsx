@@ -36,13 +36,33 @@ export default function Logs() {
     toast.info('Logs have been cleared', { duration: 6000 })
     resetLogs()
   }
+
+  const handleDownloadLogs = () => {
+    if (logs.length <= 0) {
+      return toast.error('No logs to download')
+    }
+
+    const logsData = JSON.stringify(logs, null, 2)
+    const blob = new Blob([logsData], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'logs.json'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success('Logs downloaded successfully.')
+  }
   return (
     <div className='pt-8'>
       <div className='flex items-center justify-end gap-2'>
         <Button disabled={logs.length <= 0} onClick={handleResetLogs}>
           Clear
         </Button>
-        <Button disabled={logs.length <= 0}>Download</Button>
+        <Button onClick={handleDownloadLogs} disabled={logs.length <= 0}>
+          Download
+        </Button>
       </div>
       <LogsTable columns={columns} data={logs}></LogsTable>
     </div>

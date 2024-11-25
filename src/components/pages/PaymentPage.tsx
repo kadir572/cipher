@@ -28,41 +28,6 @@ export default function PaymentPage() {
     }
   }, [clientSecret, navigate, t])
 
-  // useEffect(() => {
-  //   const getClientSecret = async (
-  //     amount: number,
-  //     currency: string
-  //   ): Promise<string> => {
-  //     try {
-  //       const client_secret = await invoke('get_stripe_client_secret', {
-  //         amount,
-  //         currency,
-  //       })
-  //       return client_secret as string
-  //     } catch (e) {
-  //       console.log(e)
-  //       return e as string
-  //     }
-  //   }
-
-  //   getClientSecret(500, 'chf')
-  //     .then(val => setClientSecret(val))
-  //     .catch(() => setClientSecret(null))
-  // }, [])
-  // return (
-  //   clientSecret && (
-  //     <Elements options={{ clientSecret }}>
-  //       <div>
-  //         <h1>Payment page</h1>
-  //         <form>
-  //           <PaymentElement />
-  //           <Button type='submit'>Submit</Button>
-  //         </form>
-  //       </div>
-  //     </Elements>
-  //   )
-  // )
-
   if (!clientSecret) return <div>No client secret found</div>
 
   return (
@@ -114,8 +79,6 @@ function CheckoutForm({ clientSecret }: CheckoutFormProps) {
 
     await elements.submit()
 
-    console.log(window.location.href)
-
     stripe
       .confirmPayment({
         elements,
@@ -125,7 +88,6 @@ function CheckoutForm({ clientSecret }: CheckoutFormProps) {
       })
       .then(res => {
         if (res.error) {
-          console.log(res.error.message)
           return toast.error(res.error.message)
         }
         toast.success('Payment successful. Thank you for your support!')

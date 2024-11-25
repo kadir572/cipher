@@ -14,7 +14,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     const theme = JSON.parse(localStorage.getItem('isDarkMode') ?? 'false') // Default to false
-    console.log('Initial theme: ', theme)
     toggleDarkMode(theme)
   }, [toggleDarkMode])
 

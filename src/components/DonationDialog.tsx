@@ -47,7 +47,7 @@ export default function DonationDialog() {
       message: t('donation.valid'), // Ensure it's a valid number
     })
     .refine(value => Number(value) >= 1, {
-      message: 'Must be atleast 1',
+      message: t('donation.min'),
     })
 
   const donationAmountValidation = donationAmountSchema.safeParse(amount)
@@ -61,29 +61,6 @@ export default function DonationDialog() {
     e.preventDefault()
 
     if (amount.length <= 0) return
-
-    const myPromise = (num: number) =>
-      new Promise((resolve, reject) => {
-        if (num > 2) {
-          resolve('Success!!')
-        }
-        reject('Error happened')
-      })
-
-    myPromise(5)
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-
-    try {
-      const res = await myPromise(5)
-      console.log(res)
-    } catch (e) {
-      console.log(e)
-    }
 
     try {
       await invoke('check_network')
@@ -191,7 +168,9 @@ export default function DonationDialog() {
                       className='h-9'
                     />
                     <CommandList>
-                      <CommandEmpty>{t('donation.curency.empty')}</CommandEmpty>
+                      <CommandEmpty>
+                        {t('donation.currency.empty')}
+                      </CommandEmpty>
                       <CommandGroup>
                         {currencies.map(c => (
                           <CommandItem
