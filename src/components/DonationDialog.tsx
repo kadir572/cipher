@@ -28,6 +28,8 @@ import {
 } from './ui/command'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import { z, ZodIssue } from 'zod'
+import { currencies } from '@/lib/constants'
 
 export default function DonationDialog() {
   const [amount, setAmount] = useState<string>('')
@@ -38,129 +40,60 @@ export default function DonationDialog() {
   const { setClientSecret } = useStripeStore()
   const { t } = useTranslation()
 
-  const currencies: { value: string; decimals: number }[] = [
-    { value: 'CHF', decimals: 2 },
-    { value: 'EUR', decimals: 2 },
-    { value: 'USD', decimals: 2 },
-    { value: 'GBP', decimals: 2 },
-    { value: 'AED', decimals: 2 },
-    { value: 'ALL', decimals: 2 },
-    { value: 'AMD', decimals: 2 },
-    { value: 'ANG', decimals: 2 },
-    { value: 'AOA', decimals: 2 },
-    { value: 'ARS', decimals: 2 },
-    { value: 'AUD', decimals: 2 },
-    { value: 'AWG', decimals: 2 },
-    { value: 'AZN', decimals: 2 },
-    { value: 'BAM', decimals: 2 },
-    { value: 'BBD', decimals: 2 },
-    { value: 'BDT', decimals: 2 },
-    { value: 'BGN', decimals: 2 },
-    { value: 'BMD', decimals: 2 },
-    { value: 'BND', decimals: 2 },
-    { value: 'BOB', decimals: 2 },
-    { value: 'BRL', decimals: 2 },
-    { value: 'BSD', decimals: 2 },
-    { value: 'BWP', decimals: 2 },
-    { value: 'BYN', decimals: 2 },
-    { value: 'BZD', decimals: 2 },
-    { value: 'CAD', decimals: 2 },
-    { value: 'CDF', decimals: 2 },
-    { value: 'CNY', decimals: 2 },
-    { value: 'COP', decimals: 2 },
-    { value: 'CRC', decimals: 2 },
-    { value: 'CVE', decimals: 2 },
-    { value: 'CZK', decimals: 2 },
-    { value: 'DKK', decimals: 2 },
-    { value: 'DOP', decimals: 2 },
-    { value: 'DZD', decimals: 2 },
-    { value: 'EGP', decimals: 2 },
-    { value: 'ETB', decimals: 2 },
-    { value: 'FJD', decimals: 2 },
-    { value: 'GEL', decimals: 2 },
-    { value: 'GIP', decimals: 2 },
-    { value: 'GMD', decimals: 2 },
-    { value: 'GTQ', decimals: 2 },
-    { value: 'GYD', decimals: 2 },
-    { value: 'HKD', decimals: 2 },
-    { value: 'HNL', decimals: 2 },
-    { value: 'HTG', decimals: 2 },
-    { value: 'IDR', decimals: 2 },
-    { value: 'ILS', decimals: 2 },
-    { value: 'INR', decimals: 2 },
-    { value: 'JPY', decimals: 0 },
-    { value: 'KES', decimals: 2 },
-    { value: 'KGS', decimals: 2 },
-    { value: 'KHR', decimals: 2 },
-    { value: 'KMF', decimals: 0 },
-    { value: 'KRW', decimals: 0 },
-    { value: 'KYD', decimals: 2 },
-    { value: 'KZT', decimals: 2 },
-    { value: 'LBP', decimals: 2 },
-    { value: 'LKR', decimals: 2 },
-    { value: 'LRD', decimals: 2 },
-    { value: 'LSL', decimals: 2 },
-    { value: 'MAD', decimals: 2 },
-    { value: 'MDL', decimals: 2 },
-    { value: 'MKD', decimals: 2 },
-    { value: 'MMK', decimals: 2 },
-    { value: 'MNT', decimals: 2 },
-    { value: 'MOP', decimals: 2 },
-    { value: 'MUR', decimals: 2 },
-    { value: 'MVR', decimals: 2 },
-    { value: 'MWK', decimals: 2 },
-    { value: 'MXN', decimals: 2 },
-    { value: 'MYR', decimals: 2 },
-    { value: 'MZN', decimals: 2 },
-    { value: 'NAD', decimals: 2 },
-    { value: 'NGN', decimals: 2 },
-    { value: 'NIO', decimals: 2 },
-    { value: 'NOK', decimals: 2 },
-    { value: 'NPR', decimals: 2 },
-    { value: 'NZD', decimals: 2 },
-    { value: 'PAB', decimals: 2 },
-    { value: 'PEN', decimals: 2 },
-    { value: 'PHP', decimals: 2 },
-    { value: 'PKR', decimals: 2 },
-    { value: 'PLN', decimals: 2 },
-    { value: 'QAR', decimals: 2 },
-    { value: 'RON', decimals: 2 },
-    { value: 'RSD', decimals: 2 },
-    { value: 'RUB', decimals: 2 },
-    { value: 'SAR', decimals: 2 },
-    { value: 'SBD', decimals: 2 },
-    { value: 'SCR', decimals: 2 },
-    { value: 'SEK', decimals: 2 },
-    { value: 'SGD', decimals: 2 },
-    { value: 'SOS', decimals: 2 },
-    { value: 'SYP', decimals: 2 },
-    { value: 'THB', decimals: 2 },
-    { value: 'TJS', decimals: 2 },
-    { value: 'TOP', decimals: 2 },
-    { value: 'TRY', decimals: 2 },
-    { value: 'TTD', decimals: 2 },
-    { value: 'TWD', decimals: 2 },
-    { value: 'TZS', decimals: 2 },
-    { value: 'UAH', decimals: 2 },
-    { value: 'UYU', decimals: 2 },
-    { value: 'UZS', decimals: 2 },
-    { value: 'VND', decimals: 0 },
-    { value: 'WST', decimals: 2 },
-    { value: 'XCD', decimals: 2 },
-    { value: 'YER', decimals: 2 },
-    { value: 'ZAR', decimals: 2 },
-    { value: 'ZMW', decimals: 2 },
-  ]
+  const donationAmountSchema = z
+    .string()
+    .min(1, t('donation.min')) // Minimum value of 1
+    .refine(value => !isNaN(Number(value)), {
+      message: t('donation.valid'), // Ensure it's a valid number
+    })
+    .refine(value => Number(value) >= 1, {
+      message: 'Must be atleast 1',
+    })
 
-  const handleChangeOpen = (open: boolean) => {
-    if (!open) {
-      setAmount('')
-    }
+  const donationAmountValidation = donationAmountSchema.safeParse(amount)
+
+  const handleOpenDialog = (open: boolean) => {
+    if (!open) setAmount('')
     setOpen(open)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (amount.length <= 0) return
+
+    const myPromise = (num: number) =>
+      new Promise((resolve, reject) => {
+        if (num > 2) {
+          resolve('Success!!')
+        }
+        reject('Error happened')
+      })
+
+    myPromise(5)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    try {
+      const res = await myPromise(5)
+      console.log(res)
+    } catch (e) {
+      console.log(e)
+    }
+
+    try {
+      await invoke('check_network')
+    } catch (e) {
+      console.error(e)
+      return toast.error(
+        'It looks like you’re offline. Please check your internet connection and try again.',
+        { duration: 6000 }
+      )
+    }
 
     toast.promise(
       () =>
@@ -173,30 +106,29 @@ export default function DonationDialog() {
           currency,
         }),
       {
-        loading: 'Redirecting...',
+        loading: 'Preparing your payment, please wait...',
         success: res => {
           const resData = res as {
             client_secret: string
             amount: number
             currency: string
           }
-          console.log(resData)
           setClientSecret(resData.client_secret as string)
           setOpen(false)
           setAmount('')
           navigate('/payment')
-          return 'Payment intent created successfully!'
+          return 'You’re all set! Please enter your card details to complete the payment.'
         },
-        error: res => {
+        error: () => {
           setAmount('')
-          return res.message
+          return 'Something went wrong. Unable to connect to Stripe. Please try again later.'
         },
       }
     )
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleChangeOpen}>
+    <Dialog open={open} onOpenChange={handleOpenDialog}>
       <DialogTrigger asChild>
         <Button
           variant='outline'
@@ -288,11 +220,33 @@ export default function DonationDialog() {
               </Popover>
             </div>
           </div>
+          {amount.length >= 1 && !donationAmountValidation.success && (
+            <div
+              className={`flex flex-col text-sm list-disc w-fit ${
+                amount.length > 0 ? 'opacity-100' : 'opacity-0'
+              } transition-all duration-200`}
+            >
+              {donationAmountValidation.error.issues.map(
+                (issue: ZodIssue, index: number) => (
+                  <li
+                    className='transition-all duration-200 transform text-red-500 dark:text-slate-200'
+                    key={index}
+                  >
+                    {issue.message}
+                  </li>
+                )
+              )}
+            </div>
+          )}
           <DialogDescription className='dark:text-gray-300'>
             {t('donation.info')}
           </DialogDescription>
           <DialogFooter className='mt-4'>
-            <Button type='submit' className='dark:bg-slate-200'>
+            <Button
+              type='submit'
+              disabled={amount.length <= 0 || !donationAmountValidation.success}
+              className='dark:bg-slate-200'
+            >
               {t('donation.dialog_submit_button_label')}
             </Button>
           </DialogFooter>

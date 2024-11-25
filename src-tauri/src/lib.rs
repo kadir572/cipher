@@ -452,13 +452,20 @@ async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeR
 }
 
 
-
+#[tauri::command]
+async fn check_network() -> Result<String, String> {
+    match reqwest::get("https://google.com").await {
+        Ok(_) => Ok("Network is avaiable".to_string()),
+        Err(e) => Err(format!("Network error: {}", e))
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret])
+        .invoke_handler(tauri::generate_handler![encrypt_file, decrypt_file, get_stripe_client_secret, check_network
+            ])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
