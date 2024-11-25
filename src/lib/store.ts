@@ -36,12 +36,9 @@ export const useProgressStore = create<ProgressState>(set => ({
       }
     }),
   resetProgress: () =>
-    set(() => {
-      console.log('triggered reset')
-      return {
-        progress: [],
-      }
-    }),
+    set(() => ({
+      progress: [],
+    })),
 }))
 
 export type PasswordState = {

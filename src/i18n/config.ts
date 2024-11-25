@@ -41,6 +41,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Timestamp',
           message: 'Message',
           no_logs: 'No logs available',
+          download_success: 'Logs have been downloaded successfully',
+          download_error: 'No logs download',
+          clear_label: 'Clear',
+          download_label: 'Download',
         },
         error_messages: {
           decryption_failed: 'Decryption failed',
@@ -88,6 +92,8 @@ i18n.use(initReactI18next).init({
             label: 'Donation amount',
             placeholder: 'Enter amount',
           },
+          min: 'Donation amount should be at least 1.',
+          valid: 'Donation amount must be of type number',
         },
         payment: {
           client_secret_error:
@@ -128,6 +134,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Zeitstempel',
           message: 'Nachricht',
           no_logs: 'Keine Logs verfügbar',
+          download_success: 'Logs wurden erfolgreich heruntergeladen',
+          download_error: 'Keine Logs zum Herunterladen',
+          clear_label: 'Löschen',
+          download_label: 'Herunterladen',
         },
         error_messages: {
           decryption_failed: 'Entschlüsselung fehlgeschlagen',
@@ -176,6 +186,8 @@ i18n.use(initReactI18next).init({
             label: 'Spendenbetrag',
             placeholder: 'Betrag eingeben',
           },
+          min: 'Der Spendenbetrag muss mindestens 1 betragen.',
+          valid: 'Der Spendenbetrag muss vom Typ Zahl sein.',
         },
         payment: {
           client_secret_error:
@@ -215,6 +227,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Timestamp',
           message: 'Messaggio',
           no_logs: 'Nessun log disponibile',
+          download_success: 'I log sono stati scaricati con successo',
+          download_error: 'Nessun log da scaricare',
+          clear_label: 'Cancella',
+          download_label: 'Scarica',
         },
         error_messages: {
           decryption_failed: 'Decrittazione fallita',
@@ -262,6 +278,8 @@ i18n.use(initReactI18next).init({
             label: 'Importo della donazione',
             placeholder: "Inserisci l'importo",
           },
+          min: 'L’importo della donazione deve essere almeno 1.',
+          valid: 'L’importo della donazione deve essere un numero.',
         },
         payment: {
           client_secret_error:
@@ -301,6 +319,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Horodatage',
           message: 'Message',
           no_logs: 'Aucun log disponible',
+          download_success: 'Les journaux ont été téléchargés avec succès',
+          download_error: 'Aucun journal à télécharger',
+          clear_label: 'Effacer',
+          download_label: 'Télécharger',
         },
         error_messages: {
           decryption_failed: 'Déchiffrement échoué',
@@ -350,6 +372,8 @@ i18n.use(initReactI18next).init({
             label: 'Montant du don',
             placeholder: 'Saisir le montant',
           },
+          min: 'Le montant de la donation doit être d’au moins 1.',
+          valid: 'Le montant de la donation doit être un nombre.',
         },
         payment: {
           client_secret_error:
@@ -389,6 +413,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Znacznik czasu',
           message: 'Wiadomość',
           no_logs: 'Brak dostępnych dzienników',
+          download_success: 'Dzienniki zostały pomyślnie pobrane',
+          download_error: 'Brak dzienników do pobrania',
+          clear_label: 'Wyczyść',
+          download_label: 'Pobierz',
         },
         error_messages: {
           decryption_failed: 'Deszyfrowanie nie powiodło się',
@@ -436,6 +464,8 @@ i18n.use(initReactI18next).init({
             label: 'Kwota darowizny',
             placeholder: 'Wprowadź kwotę',
           },
+          min: 'Kwota darowizny musi wynosić co najmniej 1.',
+          valid: 'Kwota darowizny musi być liczbą.',
         },
         payment: {
           client_secret_error:
@@ -475,6 +505,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Zaman Damgası',
           message: 'Mesaj',
           no_logs: 'Log mevcut değil',
+          download_success: 'Günlükler başarıyla indirildi',
+          download_error: 'İndirilecek günlük yok',
+          clear_label: 'Temizle',
+          download_label: 'İndir',
         },
         error_messages: {
           decryption_failed: 'Şifre çözme başarısız',
@@ -521,6 +555,8 @@ i18n.use(initReactI18next).init({
             label: 'Bağış tutarı',
             placeholder: 'Tutarı girin',
           },
+          min: 'Bağış miktarı en az 1 olmalıdır.',
+          valid: 'Bağış miktarı bir sayı olmalıdır.',
         },
         payment: {
           client_secret_error:
@@ -560,6 +596,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'الطابع الزمني',
           message: 'الرسالة',
           no_logs: 'لا توجد سجلات',
+          download_success: 'تم تنزيل السجلات بنجاح',
+          download_error: 'لا توجد سجلات للتنزيل',
+          clear_label: 'مسح',
+          download_label: 'تحميل',
         },
         error_messages: {
           decryption_failed: 'فشل فك التشفير',
@@ -606,6 +646,8 @@ i18n.use(initReactI18next).init({
             label: 'مبلغ التبرع',
             placeholder: 'أدخل المبلغ',
           },
+          min: 'يجب أن يكون مبلغ التبرع 1 على الأقل.',
+          valid: 'يجب أن يكون مبلغ التبرع رقمًا.',
         },
         payment: {
           client_secret_error:
@@ -646,6 +688,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Marca de tiempo',
           message: 'Mensaje',
           no_logs: 'No hay registros disponibles',
+          download_success: 'Los registros se han descargado con éxito',
+          download_error: 'No hay registros para descargar',
+          clear_label: 'Borrar',
+          download_label: 'Descargar',
         },
         error_messages: {
           decryption_failed: 'Descifrado fallido',
@@ -693,6 +739,8 @@ i18n.use(initReactI18next).init({
             label: 'Cantidad de la donación',
             placeholder: 'Introduzca el importe',
           },
+          min: 'El monto de la donación debe ser al menos 1.',
+          valid: 'El monto de la donación debe ser un número.',
         },
         payment: {
           client_secret_error:
@@ -731,6 +779,10 @@ i18n.use(initReactI18next).init({
           timestamp: '时间戳',
           message: '信息',
           no_logs: '没有可用的日志',
+          download_success: '日志已成功下载',
+          download_error: '没有日志可下载',
+          clear_label: '清除',
+          download_label: '下载',
         },
         error_messages: {
           decryption_failed: '解密失败',
@@ -777,6 +829,8 @@ i18n.use(initReactI18next).init({
             label: '捐款金额',
             placeholder: '输入金额',
           },
+          min: '捐款金额应至少为 1。',
+          valid: '捐款金额必须是数字。',
         },
         payment: {
           client_secret_error: '请提供捐款金额并选择货币，然后再继续支付页面。',
@@ -816,6 +870,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Carimbo de data/hora',
           message: 'Mensagem',
           no_logs: 'Sem registros disponíveis',
+          download_success: 'Os registros foram baixados com sucesso',
+          download_error: 'Nenhum registro para baixar',
+          clear_label: 'Limpar',
+          download_label: 'Baixar',
         },
         error_messages: {
           decryption_failed: 'Falha ao descriptografar',
@@ -863,6 +921,8 @@ i18n.use(initReactI18next).init({
             label: 'Quantia da doação',
             placeholder: 'Digite o valor',
           },
+          min: 'O valor da doação deve ser no mínimo 1.',
+          valid: 'O valor da doação deve ser um número.',
         },
         payment: {
           client_secret_error:
@@ -903,6 +963,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'Время',
           message: 'Сообщение',
           no_logs: 'Нет доступных журналов',
+          download_success: 'Журналы успешно загружены',
+          download_error: 'Нет журналов для загрузки',
+          clear_label: 'Очистить',
+          download_label: 'Скачать',
         },
         error_messages: {
           decryption_failed: 'Не удалось дешифровать',
@@ -950,6 +1014,8 @@ i18n.use(initReactI18next).init({
             label: 'Сумма пожертвования',
             placeholder: 'Введите сумму',
           },
+          min: 'Сумма пожертвования должна быть не менее 1.',
+          valid: 'Сумма пожертвования должна быть числом.',
         },
         payment: {
           client_secret_error:
@@ -990,6 +1056,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'タイムスタンプ',
           message: 'メッセージ',
           no_logs: '利用可能なログはありません',
+          download_success: 'ログが正常にダウンロードされました',
+          download_error: 'ダウンロードするログがありません',
+          clear_label: 'クリア',
+          download_label: 'ダウンロード',
         },
         error_messages: {
           decryption_failed: '復号化に失敗しました',
@@ -1037,6 +1107,8 @@ i18n.use(initReactI18next).init({
             label: '寄付金額',
             placeholder: '金額を入力',
           },
+          min: '寄付額は少なくとも 1 である必要があります。',
+          valid: '寄付額は数字でなければなりません。',
         },
         payment: {
           client_secret_error:
@@ -1077,6 +1149,10 @@ i18n.use(initReactI18next).init({
           timestamp: '타임스탬프',
           message: '메시지',
           no_logs: '로그가 없습니다',
+          download_success: '로그가 성공적으로 다운로드되었습니다',
+          download_error: '다운로드할 로그가 없습니다',
+          clear_label: '지우기',
+          download_label: '다운로드',
         },
         error_messages: {
           decryption_failed: '복호화 실패',
@@ -1123,6 +1199,8 @@ i18n.use(initReactI18next).init({
             label: '기부 금액',
             placeholder: '금액 입력',
           },
+          min: '기부 금액은 최소 1 이상이어야 합니다.',
+          valid: '기부 금액은 숫자여야 합니다.',
         },
         payment: {
           client_secret_error:
@@ -1163,6 +1241,10 @@ i18n.use(initReactI18next).init({
           timestamp: 'समय',
           message: 'संदेश',
           no_logs: 'कोई लॉग्स नहीं हैं',
+          download_success: 'लॉग्स सफलतापूर्वक डाउनलोड कर लिए गए हैं',
+          download_error: 'डाउनलोड करने के लिए कोई लॉग नहीं',
+          clear_label: 'साफ़ करें',
+          download_label: 'डाउनलोड करें',
         },
         error_messages: {
           decryption_failed: 'डिक्रिप्शन विफल',
@@ -1210,6 +1292,8 @@ i18n.use(initReactI18next).init({
             label: 'दान राशि',
             placeholder: 'राशि दर्ज करें',
           },
+          min: 'दान राशि कम से कम 1 होनी चाहिए।',
+          valid: 'दान राशि एक संख्या होनी चाहिए।',
         },
         payment: {
           client_secret_error:
@@ -1219,5 +1303,3 @@ i18n.use(initReactI18next).init({
     },
   },
 })
-
-export default i18n

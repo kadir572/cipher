@@ -189,9 +189,6 @@ export default function Encryption() {
         )}`
 
         listen(eventName, e => {
-          if ((e.payload as number) > 98) {
-            console.log(e.payload)
-          }
           setProgress(Math.floor(e.payload as number), filePath)
         }).catch(e => {
           toast.error(e, { duration: 6000 })

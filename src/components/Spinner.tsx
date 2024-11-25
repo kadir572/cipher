@@ -1,6 +1,6 @@
 type Props = {
-  size?: string // Tailwind class for size, like 'h-12 w-12'
-  color?: string // Tailwind class for color, like 'border-blue-500'
+  size?: string
+  color?: string
 }
 
 export default function Spinner({
