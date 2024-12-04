@@ -13,13 +13,14 @@ import {
   TableRow,
 } from './ui/table'
 import { useTranslation } from 'react-i18next'
+import { Log } from '@/lib/types'
 
-type Props<TData extends { type: string }, TValue> = {
+type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export default function LogsTable<TData extends { type: string }, TValue>({
+export default function LogsTable<TData extends Log, TValue>({
   columns,
   data,
 }: Props<TData, TValue>) {
@@ -65,7 +66,7 @@ export default function LogsTable<TData extends { type: string }, TValue>({
                       ? 'relative before:absolute before:w-1 before:h-full before:top-0 before:bottom-0 before:left-0'
                       : ''
                   } ${
-                    index === 0 && cell.row.original.type === 'success'
+                    index === 0 && cell.row.original.level === 'info'
                       ? 'before:bg-green-500'
                       : 'before:bg-red-500'
                   }`}

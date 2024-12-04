@@ -1,12 +1,11 @@
-import { ErrorType, SuccessType } from './types/encryption'
 import { create } from 'zustand'
 
-export type Log = {
-  type: 'success' | 'error'
-  variant: ErrorType | SuccessType
-  timestamp: string
-  filePath?: string
-}
+// export type Log = {
+//   type: 'success' | 'error'
+//   variant: ErrorType | SuccessType
+//   timestamp: string
+//   filePath?: string
+// }
 
 export type ProgressState = {
   progress: { key: string; value: number }[]
@@ -93,23 +92,23 @@ export const useFilePathStore = create<FilePathState>(set => ({
     })),
 }))
 
-export type LogState = {
-  logs: Log[]
-  addLog: (log: Log) => void
-  resetLogs: () => void
-}
+// export type LogState = {
+//   logs: Log[]
+//   addLog: (log: Log) => void
+//   resetLogs: () => void
+// }
 
-export const useLogStore = create<LogState>(set => ({
-  logs: [],
-  addLog: (log: Log) =>
-    set(state => ({
-      logs: [...state.logs, log],
-    })),
-  resetLogs: () =>
-    set(() => ({
-      logs: [],
-    })),
-}))
+// export const useLogStore = create<LogState>(set => ({
+//   logs: [],
+//   addLog: (log: Log) =>
+//     set(state => ({
+//       logs: [...state.logs, log],
+//     })),
+//   resetLogs: () =>
+//     set(() => ({
+//       logs: [],
+//     })),
+// }))
 
 export type ThemeState = {
   isDarkMode: boolean

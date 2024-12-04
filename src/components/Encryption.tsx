@@ -7,11 +7,9 @@ import { Label } from './ui/label'
 import { invoke } from '@tauri-apps/api/core'
 import { toast } from 'sonner'
 import { getErrorMessage, getResponseMessage } from '@/lib/utils'
-import { EncryptionError, EncryptionResponse } from '@/lib/types/encryption'
 import {
   useFilePathStore,
   useIsProcessingStore,
-  useLogStore,
   usePasswordStore,
   useProgressStore,
 } from '@/lib/store'
@@ -25,11 +23,10 @@ import ShowPasswordIcon from './icons/ShowPasswordIcon'
 import HidePasswordIcon from './icons/HidePasswordIcon'
 import ClipLoader from 'react-spinners/ClipLoader'
 import TickIcon from './icons/TickIcon'
+import { AppResponse } from '@/lib/types'
 export default function Encryption() {
   const { t } = useTranslation()
   const passwordInputRef = useRef<HTMLInputElement>(null)
-
-  const { addLog } = useLogStore()
   const { setProgress, progress, addProgress, resetProgress } =
     useProgressStore()
   const { filePaths, addFilePath, resetFilePaths } = useFilePathStore()
@@ -127,30 +124,24 @@ export default function Encryption() {
 
         toast.promise(() => invoke('encrypt_file', { filePath, password }), {
           success: res => {
-            const encRes = res as EncryptionResponse
-            addLog({
-              type: 'success',
-              variant: encRes.type_,
-              timestamp: encRes.timestamp,
-              filePath: encRes.file_path,
-            })
+            console.log(res)
+            const encRes = res as AppResponse
             resolve()
-            return getResponseMessage(encRes.type_, encRes.file_path, t)
+            return getResponseMessage(
+              encRes.text_code,
+              encRes.file_path ?? '',
+              t
+            )
           },
           error: res => {
-            const encRes = res as EncryptionError
-            addLog({
-              type: 'error',
-              variant: encRes.type_,
-              timestamp: encRes.timestamp,
-            })
+            const encRes = res as AppResponse
             setPassword('')
             setShowPassword(false)
             if (passwordInputRef.current) {
               passwordInputRef.current.focus()
             }
             reject()
-            return getErrorMessage(encRes.type_, t)
+            return getErrorMessage(encRes.text_code, t)
           },
           duration: 6000,
         })
@@ -197,31 +188,25 @@ export default function Encryption() {
 
         toast.promise(() => invoke('decrypt_file', { filePath, password }), {
           success: res => {
-            const encRes = res as EncryptionResponse
-            addLog({
-              type: 'success',
-              variant: encRes.type_,
-              timestamp: encRes.timestamp,
-              filePath: encRes.file_path,
-            })
+            const encRes = res as AppResponse
             setProgress(100, filePath)
             resolve()
-            return getResponseMessage(encRes.type_, encRes.file_path, t)
+            return getResponseMessage(
+              encRes.text_code,
+              encRes.file_path ?? '',
+              t
+            )
           },
           error: res => {
-            const encRes = res as EncryptionError
-            addLog({
-              type: 'error',
-              variant: encRes.type_,
-              timestamp: encRes.timestamp,
-            })
+            console.log(res)
+            const encRes = res as AppResponse
             setPassword('')
             setShowPassword(false)
             if (passwordInputRef.current) {
               passwordInputRef.current.focus()
             }
             reject()
-            return getErrorMessage(encRes.type_, t)
+            return getErrorMessage(encRes.text_code, t)
           },
           duration: 6000,
         })
