@@ -1,28 +1,61 @@
-use std::{fmt, str::FromStr};
-
 use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumString, AsRefStr};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize)]
+pub struct ProgressInfo {
+    pub percentage: f64,
+    pub bytes_processed: usize,
+    pub total_bytes: usize,
+    pub speed_mbps: f64,
+    pub elapsed_seconds: f64,
+    pub estimated_remaining_seconds: f64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ProcessingStats {
+    pub total_size_bytes: usize,
+    pub processing_time_seconds: f64,
+    pub average_speed_mbps: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Display, EnumString, AsRefStr)]
+#[strum(serialize_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum ResponseTextCode {
+    #[strum(serialize = "encryption_successful", to_string = "Encryption successful")]
     EncryptionSuccessful,
+    #[strum(serialize = "decryption_successful", to_string = "Decryption successful")]
     DecryptionSuccessful,
+    #[strum(serialize = "encryption_failed", to_string = "Encryption failed")]
     EncryptionFailed,
+    #[strum(serialize = "decryption_failed", to_string = "Decryption failed")]
     DecryptionFailed,
+    #[strum(serialize = "file_open_failed", to_string = "File open failed")]
     FileOpenFailed,
+    #[strum(serialize = "file_read_failed", to_string = "File read failed")]
     FileReadFailed,
+    #[strum(serialize = "file_creation_failed", to_string = "File creation failed")]
     FileCreationFailed,
+    #[strum(serialize = "key_generation_failed", to_string = "Key generation failed")]
     KeyGenerationFailed,
+    #[strum(serialize = "invalid_password", to_string = "Invalid password")]
     InvalidPassword,
+    #[strum(serialize = "db_conn_failed", to_string = "Database connection failed")]
     DbConnFailed,
+    #[strum(serialize = "parent_directory_retrieve_failed", to_string = "Parent directory retrieve failed")]
     ParentDirectoryRetrieveFailed,
+    #[strum(serialize = "file_name_extraction_failed", to_string = "File name extraction failed")]
     FileNameExtractionFailed,
+    #[strum(serialize = "file_extension_extraction_failed", to_string = "File extension extraction failed")]
     FileExtensionExtractionFailed,
+    #[strum(serialize = "file_creation_successful", to_string = "File creation successful")]
     FileCreationSuccessful,
+    #[strum(serialize = "logs_downloaded", to_string = "Logs downloaded")]
     LogsDownloaded,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Display, EnumString, AsRefStr)]
+#[strum(serialize_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum LogLevel {
     Info,
@@ -40,104 +73,14 @@ pub enum Status {
     Error,
 }
 
-impl fmt::Display for ResponseTextCode {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
-
-impl FromStr for ResponseTextCode {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "encryption_successful" => Ok(ResponseTextCode::EncryptionSuccessful),
-            "decryption_successful" => Ok(ResponseTextCode::DecryptionSuccessful),
-            "encryption_failed" => Ok(ResponseTextCode::EncryptionFailed),
-            "decryption_failed" => Ok(ResponseTextCode::DecryptionFailed),
-            "file_open_failed" => Ok(ResponseTextCode::FileOpenFailed),
-            "file_read_failed" => Ok(ResponseTextCode::FileReadFailed),
-            "file_creation_failed" => Ok(ResponseTextCode::FileCreationFailed),
-            "key_generation_failed" => Ok(ResponseTextCode::KeyGenerationFailed),
-            "invalid_password" => Ok(ResponseTextCode::InvalidPassword),
-            "db_conn_failed" => Ok(ResponseTextCode::DbConnFailed),
-            "parent_directory_retrieve_failed" => {
-                Ok(ResponseTextCode::ParentDirectoryRetrieveFailed)
-            }
-            "file_name_extraction_failed" => Ok(ResponseTextCode::FileNameExtractionFailed),
-            "file_extension_extraction_failed" => {
-                Ok(ResponseTextCode::FileExtensionExtractionFailed)
-            }
-            "file_creation_successful" => Ok(ResponseTextCode::FileCreationSuccessful),
-            "logs_downloaded" => Ok(ResponseTextCode::LogsDownloaded),
-            _ => Err(()),
-        }
-    }
-}
-
-impl fmt::Display for LogLevel {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
-
-impl FromStr for LogLevel {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "info" => Ok(LogLevel::Info),
-            "error" => Ok(LogLevel::Error),
-            "warning" => Ok(LogLevel::Warning),
-            "debug" => Ok(LogLevel::Debug),
-            "trace" => Ok(LogLevel::Trace),
-            "critical" => Ok(LogLevel::Critical),
-            _ => Err(()),
-        }
-    }
-}
-
-impl LogLevel {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Info => "info",
-            Self::Error => "error",
-            Self::Warning => "warning",
-            Self::Debug => "debug",
-            Self::Trace => "trace",
-            Self::Critical => "critical",
-        }
-    }
-}
-
-impl ResponseTextCode {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            ResponseTextCode::EncryptionSuccessful => "Encryption successful",
-            ResponseTextCode::DecryptionSuccessful => "Decryption successful",
-            ResponseTextCode::EncryptionFailed => "Encryption failed",
-            ResponseTextCode::DecryptionFailed => "Decryption failed",
-            ResponseTextCode::FileOpenFailed => "File open failed",
-            ResponseTextCode::FileReadFailed => "File read failed",
-            ResponseTextCode::FileCreationFailed => "File creation failed",
-            ResponseTextCode::KeyGenerationFailed => "Key generation failed",
-            ResponseTextCode::InvalidPassword => "Invalid password",
-            ResponseTextCode::DbConnFailed => "Database connection failed",
-            ResponseTextCode::ParentDirectoryRetrieveFailed => "Parent directory retrieve failed",
-            ResponseTextCode::FileNameExtractionFailed => "File name extraction failed",
-            ResponseTextCode::FileExtensionExtractionFailed => "File extension extraction failed",
-            ResponseTextCode::FileCreationSuccessful => "File creation successful",
-            ResponseTextCode::LogsDownloaded => "Logs downloaded",
-        }
-    }
-}
-
+// Response types
 #[derive(Debug, Serialize)]
 pub struct AppResponse {
     pub status: Status,
     pub text_code: ResponseTextCode,
     pub file_path: Option<String>,
     pub timestamp: String,
+    pub stats: Option<ProcessingStats>,
 }
 
 #[derive(Debug, Serialize)]

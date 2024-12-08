@@ -3,11 +3,11 @@ pub mod logs;
 pub mod network;
 pub mod stripe;
 pub mod types;
+
 use encryption::{decrypt_file, encrypt_file};
-use logs::duckdb::{add_log, clear_all_logs, download_logs, get_all_logs};
+use logs::duckdb::{add_log, clear_logs, download_logs, get_logs};
 use network::check_network;
 use stripe::get_stripe_client_secret;
-use tauri_plugin_fs::FsExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -20,13 +20,11 @@ pub fn run() {
             get_stripe_client_secret,
             check_network,
             add_log,
-            get_all_logs,
-            clear_all_logs,
+            get_logs,
+            clear_logs,
             download_logs
         ])
         .setup(|app| {
-            let scope = app.fs_scope();
-            scope.allow_directory("/Downloads", false);
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
