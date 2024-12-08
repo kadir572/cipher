@@ -92,24 +92,6 @@ export const useFilePathStore = create<FilePathState>(set => ({
     })),
 }))
 
-// export type LogState = {
-//   logs: Log[]
-//   addLog: (log: Log) => void
-//   resetLogs: () => void
-// }
-
-// export const useLogStore = create<LogState>(set => ({
-//   logs: [],
-//   addLog: (log: Log) =>
-//     set(state => ({
-//       logs: [...state.logs, log],
-//     })),
-//   resetLogs: () =>
-//     set(() => ({
-//       logs: [],
-//     })),
-// }))
-
 export type ThemeState = {
   isDarkMode: boolean
   toggleDarkMode: (isDarkMode?: boolean) => void
@@ -148,4 +130,23 @@ export const useStripeStore = create<StripeState>(set => ({
     set({
       clientSecret,
     }),
+}))
+
+export type LastLogState = {
+  lastLog: {
+    title: string | null
+    description: string | null
+    type: 'success' | 'error'
+  } | null
+  setLastLog: (
+    title: string | null,
+    description: string | null,
+    type: 'success' | 'error'
+  ) => void
+}
+
+export const useCurrentLogsStore = create<LastLogState>(set => ({
+  lastLog: null,
+  setLastLog: (title, description, type) =>
+    set({ lastLog: { title, description, type } }),
 }))

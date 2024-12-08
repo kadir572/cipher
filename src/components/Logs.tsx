@@ -7,27 +7,35 @@ import { useEffect, useState } from 'react'
 import { AppResponse, Log } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog'
 
 export default function Logs() {
   const [logs, setLogs] = useState<Log[]>([])
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         const fetchedLogs = await invoke<Log[]>('get_all_logs')
-        console.log(fetchedLogs)
         setLogs(fetchedLogs)
       } catch (e) {
-        console.log(e)
+        console.error(e)
+        toast.error(t('logs.fetch_failed'))
       }
     }
     fetchLogs()
-  }, [])
-
-  useEffect(() => {
-    console.log(logs)
-  }, [logs])
-  const { t } = useTranslation()
+  }, [t])
 
   const columns: ColumnDef<Log>[] = [
     {
@@ -46,20 +54,20 @@ export default function Logs() {
     },
   ]
 
-  const handleResetLogs = async () => {
+  const handleClearLogs = async () => {
     try {
       await invoke('clear_all_logs')
-      setLogs([]) // Clear logs in frontend state
-      toast.success(t('logs.cleared')) // Assuming you have a translation for this
+      setLogs([])
+      toast.info(t('logs.cleared'))
     } catch (e) {
       console.error(e)
-      toast.error(t('logs.clearFailed')) // Assuming you have a translation for this
+      toast.error(t('logs.clearFailed'))
     }
   }
 
   const handleDownloadLogs = async () => {
     if (logs.length <= 0) {
-      return toast.error(t('logs.noLogsToDownload'))
+      return toast.error(t('logs.no_logs'))
     }
 
     try {
@@ -69,11 +77,11 @@ export default function Logs() {
       })
 
       if (result.status === 'success') {
-        toast.success(t('logs.downloadSuccessful'))
+        toast.success(t('logs.download_success'))
       }
     } catch (e) {
       console.error(e)
-      toast.error(t('logs.downloadFailed'))
+      toast.error(t('logs.download_error'))
     }
   }
 
@@ -86,11 +94,29 @@ export default function Logs() {
   return (
     <div className='pt-8'>
       <div className='flex items-center justify-end gap-2'>
-        <Button disabled={logs.length <= 0} onClick={handleResetLogs}>
-          {t('logs.clear')}
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button disabled={logs.length <= 0}>{t('logs.clear_label')}</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t('logs.clear_dialog_title')}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('logs.clear_dialog_description')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('logs.cancel')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleClearLogs}>
+                {t('logs.clear_label')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Button onClick={handleDownloadLogs} disabled={logs.length <= 0}>
-          {t('logs.download')}
+          {t('logs.download_label')}
         </Button>
       </div>
       <LogsTable

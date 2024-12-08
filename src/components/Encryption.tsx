@@ -8,6 +8,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { toast } from 'sonner'
 import { getErrorMessage, getResponseMessage } from '@/lib/utils'
 import {
+  useCurrentLogsStore,
   useFilePathStore,
   useIsProcessingStore,
   usePasswordStore,
@@ -15,7 +16,7 @@ import {
 } from '@/lib/store'
 import { Progress } from './ui/progress'
 import { listen } from '@tauri-apps/api/event'
-import { z, ZodIssue } from 'zod'
+import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import FileUploadIcon from './icons/FileUploadIcon'
 import LockIcon from './icons/LockIcon'
@@ -24,6 +25,10 @@ import HidePasswordIcon from './icons/HidePasswordIcon'
 import ClipLoader from 'react-spinners/ClipLoader'
 import TickIcon from './icons/TickIcon'
 import { AppResponse } from '@/lib/types'
+import { CheckIcon, XIcon } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
+import InfoIcon from './icons/InfoIcon'
+
 export default function Encryption() {
   const { t } = useTranslation()
   const passwordInputRef = useRef<HTMLInputElement>(null)
@@ -33,6 +38,7 @@ export default function Encryption() {
   const { isProcessing, setIsProcessing } = useIsProcessingStore()
   const { password, setPassword, showPassword, setShowPassword } =
     usePasswordStore()
+  const { lastLog, setLastLog } = useCurrentLogsStore()
 
   const passwordSchema = z
     .string()
@@ -105,6 +111,7 @@ export default function Encryption() {
     if (filePaths.length <= 0 || isProcessing) return
 
     setIsProcessing(true)
+    setLastLog(null, null, 'success')
 
     const promises = filePaths.map(filePath => {
       addProgress(filePath)
@@ -122,29 +129,33 @@ export default function Encryption() {
           reject()
         })
 
-        toast.promise(() => invoke('encrypt_file', { filePath, password }), {
-          success: res => {
-            console.log(res)
-            const encRes = res as AppResponse
+        invoke<AppResponse>('encrypt_file', { filePath, password })
+          .then(res => {
             resolve()
-            return getResponseMessage(
-              encRes.text_code,
-              encRes.file_path ?? '',
-              t
+            setLastLog(
+              t('encryption.encrypt_success'),
+              `${t('encryption.file_saved_at')}: ${filePath}`,
+              'success'
             )
-          },
-          error: res => {
-            const encRes = res as AppResponse
+            toast.success(
+              getResponseMessage(res.text_code, res.file_path ?? '', t),
+              {
+                duration: 6000,
+              }
+            )
+          })
+          .catch(res => {
             setPassword('')
             setShowPassword(false)
             if (passwordInputRef.current) {
               passwordInputRef.current.focus()
             }
             reject()
-            return getErrorMessage(encRes.text_code, t)
-          },
-          duration: 6000,
-        })
+            setLastLog('Error', getErrorMessage(res.text_code, t), 'error')
+            toast.error(getErrorMessage(res.text_code, t), {
+              duration: 6000,
+            })
+          })
       })
     })
 
@@ -169,6 +180,7 @@ export default function Encryption() {
     if (filePaths.length <= 0 || isProcessing) return
 
     setIsProcessing(true)
+    setLastLog(null, null, 'success')
 
     const promises = filePaths.map(filePath => {
       addProgress(filePath)
@@ -186,30 +198,34 @@ export default function Encryption() {
           reject()
         })
 
-        toast.promise(() => invoke('decrypt_file', { filePath, password }), {
-          success: res => {
-            const encRes = res as AppResponse
+        invoke<AppResponse>('decrypt_file', { filePath, password })
+          .then(res => {
             setProgress(100, filePath)
             resolve()
-            return getResponseMessage(
-              encRes.text_code,
-              encRes.file_path ?? '',
-              t
+            setLastLog(
+              t('encryption.decrypt_success'),
+              `${t('encryption.file_saved_at')}: ${filePath}`,
+              'success'
             )
-          },
-          error: res => {
-            console.log(res)
-            const encRes = res as AppResponse
+            toast.success(
+              getResponseMessage(res.text_code, res.file_path ?? '', t),
+              {
+                duration: 6000,
+              }
+            )
+          })
+          .catch(res => {
             setPassword('')
             setShowPassword(false)
             if (passwordInputRef.current) {
               passwordInputRef.current.focus()
             }
             reject()
-            return getErrorMessage(encRes.text_code, t)
-          },
-          duration: 6000,
-        })
+            setLastLog('Error', getErrorMessage(res.text_code, t), 'error')
+            toast.error(getErrorMessage(res.text_code, t), {
+              duration: 6000,
+            })
+          })
       })
     })
 
@@ -235,6 +251,21 @@ export default function Encryption() {
       passwordInputRef.current.focus()
     }
   }, [filePaths.length])
+
+  const passwordRules = [
+    {
+      test: (p: string) => p.length >= 8 && p.length <= 32,
+      message: t('password.min'),
+    },
+    { test: (p: string) => /[A-Z]/.test(p), message: t('password.uppercase') },
+    { test: (p: string) => /[a-z]/.test(p), message: t('password.lowercase') },
+    { test: (p: string) => /\d/.test(p), message: t('password.number') },
+    {
+      test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
+      message: t('password.special'),
+    },
+    { test: (p: string) => !/\s/.test(p), message: t('password.space') },
+  ]
 
   return (
     <form
@@ -278,7 +309,7 @@ export default function Encryption() {
         <Separator orientation='vertical' />
         <div className='flex items-center gap-px w-full h-10'>
           <Input
-            disabled={isProcessing}
+            disabled={filePaths.length <= 0 || isProcessing}
             readOnly={isProcessing}
             ref={passwordInputRef}
             id='password'
@@ -301,7 +332,7 @@ export default function Encryption() {
         </div>
       </div>
 
-      <div className='w-full flex items-center'>
+      <div className='w-full flex items-center mt-2'>
         <Button
           type={
             filePaths.length > 0 && filePaths.every(fp => fp.endsWith('.enc'))
@@ -352,49 +383,105 @@ export default function Encryption() {
           {t('encryption.reset')}
         </Button>
       </div>
-      <div className='overflow-hidden flex flex-col gap-4'>
-        {progress.map((p, i) => (
-          <div key={p.key} className='flex flex-col gap-1'>
-            <span className='flex items-center gap-2'>
-              <span>
-                {p.value < 100 && (
-                  <ClipLoader color='#1e293b' size={20} className='' />
-                )}
-                {p.value >= 100 && (
-                  <span>
-                    <TickIcon />
-                  </span>
-                )}
-              </span>
-              {filePaths[i]}
-            </span>
-            <Progress
-              className={`${
-                isProcessing ? 'opacity-100' : 'opacity-0'
-              } transition-opacity duration-200`}
-              value={p.value}
-              indicatorColor='bg-slate-700 dark:bg-slate-800'
-            />
-          </div>
-        ))}
-      </div>
-      <div
-        className={`flex flex-col text-sm list-disc w-fit ${
-          password.length > 0 ? 'opacity-100' : 'opacity-0'
-        } transition-all duration-200`}
-      >
-        {filePaths.every(fp => !fp.endsWith('.enc')) &&
-          !passwordValidation.success &&
-          passwordValidation.error.issues.map(
-            (issue: ZodIssue, index: number) => (
-              <li
-                className='transition-all duration-200 transform dark:text-slate-200'
+      <div className='relative'>
+        <div
+          className={`h-0 ${
+            password.length > 0 && filePaths.every(fp => !fp.endsWith('.enc'))
+              ? 'h-[120px]'
+              : 'h-0'
+          } transition-all duration-200 overflow-hidden`}
+        >
+          {filePaths.every(fp => !fp.endsWith('.enc')) &&
+            passwordRules.map((rule, index) => (
+              <div
                 key={index}
+                className='flex items-center gap-2 transition-all duration-200 transform dark:text-slate-200'
               >
-                {issue.message}
-              </li>
-            )
-          )}
+                <div className='relative w-4 h-4'>
+                  <span
+                    className={`absolute inset-0 transition-all duration-300 ${
+                      rule.test(password)
+                        ? 'opacity-100 scale-100 text-green-500'
+                        : 'opacity-0 scale-0'
+                    }`}
+                  >
+                    <CheckIcon className='w-4 h-4' />
+                  </span>
+                  <span
+                    className={`absolute inset-0 transition-all duration-300 ${
+                      !rule.test(password)
+                        ? 'opacity-100 scale-100 text-red-500'
+                        : 'opacity-0 scale-0'
+                    }`}
+                  >
+                    <XIcon className='w-4 h-4' />
+                  </span>
+                </div>
+                <span>{rule.message}</span>
+              </div>
+            ))}
+        </div>
+
+        <div className='transition-all duration-300'>
+          <div className='overflow-hidden flex flex-col gap-4'>
+            {progress.map((p, i) => (
+              <div key={p.key} className='flex flex-col gap-1'>
+                <span className='flex items-center gap-2'>
+                  <span>
+                    {p.value < 100 && (
+                      <ClipLoader color='#1e293b' size={20} className='' />
+                    )}
+                    {p.value >= 100 && (
+                      <span>
+                        <TickIcon />
+                      </span>
+                    )}
+                  </span>
+                  {filePaths[i]}
+                </span>
+                <Progress
+                  className={`${
+                    isProcessing ? 'opacity-100' : 'opacity-0'
+                  } transition-opacity duration-200`}
+                  value={p.value}
+                  indicatorColor='bg-slate-700 dark:bg-slate-800'
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Alert
+          className={`transition-all transform duration-300 ease-in-out flex items-center gap-4 ${
+            lastLog?.title && !isProcessing
+              ? 'opacity-100 scale-100 max-h-[200px] mt-4'
+              : 'opacity-0 scale-0 max-h-0 overflow-hidden mt-0'
+          } ${
+            lastLog?.type === 'success'
+              ? 'bg-green-400 border-green-600 dark:bg-green-800'
+              : 'bg-red-400 border-red-600 dark:bg-red-800'
+          } text-slate-800 text-wrap break-words origin-center relative`}
+        >
+          <div>
+            <InfoIcon />
+          </div>
+          <div className='flex-grow'>
+            <div className='flex items-center justify-between'>
+              <AlertTitle className='font-semibold'>
+                {lastLog?.title}
+              </AlertTitle>
+              <button
+                onClick={() => setLastLog(null, null, 'success')}
+                className='p-1 hover:bg-black/10 rounded-full transition-colors'
+                type='button'
+              >
+                <XIcon className='w-4 h-4' />
+              </button>
+            </div>
+
+            <AlertDescription>{lastLog?.description}</AlertDescription>
+          </div>
+        </Alert>
       </div>
     </form>
   )

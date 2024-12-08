@@ -1,5 +1,5 @@
-use std::env;
 use dotenv::dotenv;
+use std::env;
 
 use reqwest::Client;
 use serde_json::Value;
@@ -7,7 +7,10 @@ use serde_json::Value;
 use crate::stripe::types::{StripeError, StripeResponse};
 
 #[tauri::command]
-pub async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<StripeResponse, StripeError> {
+pub async fn get_stripe_client_secret(
+    amount: u64,
+    currency: &str,
+) -> Result<StripeResponse, StripeError> {
     dotenv().ok();
 
     // Access the Vercel environment variable to determine if it's development or production
@@ -64,8 +67,14 @@ pub async fn get_stripe_client_secret(amount: u64, currency: &str) -> Result<Str
     } else {
         // Handle error if client_secret is not returned
         Err(StripeError {
-            code: json["error"]["code"].as_str().unwrap_or("unknown").to_string(),
-            message: json["error"]["message"].as_str().unwrap_or("Unknown error").to_string(),
+            code: json["error"]["code"]
+                .as_str()
+                .unwrap_or("unknown")
+                .to_string(),
+            message: json["error"]["message"]
+                .as_str()
+                .unwrap_or("Unknown error")
+                .to_string(),
             param: json["error"]["param"].as_str().map(|s| s.to_string()),
             doc_url: json["error"]["doc_url"].as_str().unwrap_or("").to_string(),
         })

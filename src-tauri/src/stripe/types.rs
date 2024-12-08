@@ -4,7 +4,7 @@ use serde::Serialize;
 pub struct StripeResponse {
     pub(crate) client_secret: String,
     pub(crate) amount: u64,
-    pub(crate) currency: String
+    pub(crate) currency: String,
 }
 
 #[derive(Serialize)]
