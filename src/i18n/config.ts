@@ -26,6 +26,15 @@ i18n.use(initReactI18next).init({
           reset: 'Reset',
           mixed_file_types:
             'Files are mixed. All should either have .enc or none.',
+          stats: {
+            total_size: 'Total size',
+            time_taken: 'Time taken',
+            average_speed: 'Average speed',
+            progress: 'Progress',
+            speed: 'Speed',
+            eta: 'ETA',
+            processed: 'Processed',
+          },
         },
         language: {
           select: 'Select language',
@@ -128,6 +137,15 @@ i18n.use(initReactI18next).init({
           reset: 'Zurücksetzen',
           mixed_file_types:
             'Dateien sind gemischt. Alle sollten entweder .enc haben oder keines.',
+          stats: {
+            total_size: 'Gesamtgröße',
+            time_taken: 'Benötigte Zeit',
+            average_speed: 'Durchschnittliche Geschwindigkeit',
+            progress: 'Fortschritt',
+            speed: 'Geschwindigkeit',
+            eta: 'Verbleibende Zeit',
+            processed: 'Verarbeitet',
+          },
         },
         reset: 'Reset',
         language: {
@@ -229,6 +247,15 @@ i18n.use(initReactI18next).init({
           reset: 'Reimposta',
           mixed_file_types:
             'I file sono misti. Devono avere tutti .enc o nessuno.',
+          stats: {
+            total_size: 'Dimensione totale',
+            time_taken: 'Tempo impiegato',
+            average_speed: 'Velocità media',
+            progress: 'Progresso',
+            speed: 'Velocità',
+            eta: 'Tempo stimato',
+            processed: 'Elaborato',
+          },
         },
         language: {
           select: 'Seleziona lingua',
@@ -328,6 +355,15 @@ i18n.use(initReactI18next).init({
           reset: 'Réinitialiser',
           mixed_file_types:
             'Les fichiers sont mélangés. Tous doivent avoir .enc ou aucun.',
+          stats: {
+            total_size: 'Taille totale',
+            time_taken: 'Temps pris',
+            average_speed: 'Vitesse moyenne',
+            progress: 'Progression',
+            speed: 'Vitesse',
+            eta: 'Temps restant',
+            processed: 'Traité',
+          },
         },
         language: {
           select: 'Sélectionner la langue',
@@ -403,7 +439,7 @@ i18n.use(initReactI18next).init({
             label: 'Montant du don',
             placeholder: 'Saisir le montant',
           },
-          min: 'Le montant de la donation doit être d’au moins 1.',
+          min: "Le montant de la donation doit être d'au moins 1.",
           valid: 'Le montant de la donation doit être un nombre.',
         },
         payment: {
@@ -429,6 +465,15 @@ i18n.use(initReactI18next).init({
           reset: 'Zresetuj',
           mixed_file_types:
             'Pliki są pomieszane. Wszystkie muszą mieć .enc lub żadne.',
+          stats: {
+            total_size: 'Całkowita wielkość',
+            time_taken: 'Czas potrzebny',
+            average_speed: 'Średnia prędkość',
+            progress: 'Postęp',
+            speed: 'Prędkość',
+            eta: 'Czas pozostały',
+            processed: 'Przetworzone',
+          },
         },
         language: {
           select: 'Wybierz język',
@@ -528,6 +573,15 @@ i18n.use(initReactI18next).init({
           reset: 'Sıfırla',
           mixed_file_types:
             'Dosyalar karışık. Hepsinin .enc uzantısı olmalı ya da hiçbirinin olmamalı.',
+          stats: {
+            total_size: 'Toplam boyut',
+            time_taken: 'Süre',
+            average_speed: 'Ortalama hız',
+            progress: 'İlerleme',
+            speed: 'Hız',
+            eta: 'Kalan süre',
+            processed: 'İşlenen',
+          },
         },
         language: {
           select: 'Dil Seç',
@@ -627,6 +681,15 @@ i18n.use(initReactI18next).init({
           reset: 'إعادة تعيين',
           mixed_file_types:
             'الملفات مختلطة. يجب أن تحتوي جميعها على .enc أو لا تحتوي أي منها.',
+          stats: {
+            total_size: 'إجمالي الحجم',
+            time_taken: 'الوقت المستغرق',
+            average_speed: 'متوسط السرعة',
+            progress: 'التقدم',
+            speed: 'السرعة',
+            eta: 'الوقت المتبقي',
+            processed: 'معالج',
+          },
         },
         language: {
           select: 'اختيار اللغة',
@@ -725,6 +788,15 @@ i18n.use(initReactI18next).init({
           reset: 'Restablecer',
           mixed_file_types:
             'Los archivos están mezclados. Todos deben tener .enc o ninguno.',
+          stats: {
+            total_size: 'Tamaño total',
+            time_taken: 'Tiempo tomado',
+            average_speed: 'Velocidad media',
+            progress: 'Progreso',
+            speed: 'Velocidad',
+            eta: 'Tiempo estimado',
+            processed: 'Procesado',
+          },
         },
         language: {
           select: 'Seleccionar idioma',
@@ -824,6 +896,15 @@ i18n.use(initReactI18next).init({
           uploaded: '文件已上传',
           reset: '重置',
           mixed_file_types: '文件混合。所有文件要么都有 .enc，要么都没有。',
+          stats: {
+            total_size: '总大小',
+            time_taken: '耗时',
+            average_speed: '平均速度',
+            progress: '进度',
+            speed: '速度',
+            eta: '剩余时间',
+            processed: '已处理',
+          },
         },
         language: {
           select: '选择语言',
@@ -921,6 +1002,15 @@ i18n.use(initReactI18next).init({
           reset: 'Resetar',
           mixed_file_types:
             'Os arquivos estão misturados. Todos devem ter .enc ou nenhum.',
+          stats: {
+            total_size: 'Tamanho total',
+            time_taken: 'Tempo necessário',
+            average_speed: 'Velocidade média',
+            progress: 'Progresso',
+            speed: 'Velocidade',
+            eta: 'Tempo restante',
+            processed: 'Processado',
+          },
         },
         language: {
           select: 'Selecionar idioma',
@@ -1020,6 +1110,15 @@ i18n.use(initReactI18next).init({
           reset: 'Сбросить',
           mixed_file_types:
             'Файлы смешаны. Все должны иметь .enc или ни один не должен.',
+          stats: {
+            total_size: 'Общий размер',
+            time_taken: 'Время',
+            average_speed: 'Средняя скорость',
+            progress: 'Прогресс',
+            speed: 'Скорость',
+            eta: 'Осталось времени',
+            processed: 'Обработанные',
+          },
         },
         language: {
           select: 'Выбрать язык',
@@ -1119,6 +1218,15 @@ i18n.use(initReactI18next).init({
           reset: 'リセット',
           mixed_file_types:
             'ファイルが混在しています。全てが .enc 拡張子を持つか、持たないかにしてください。',
+          stats: {
+            total_size: '総サイズ',
+            time_taken: '所要時間',
+            average_speed: '平均速度',
+            progress: '進捗',
+            speed: '速度',
+            eta: '残り時間',
+            processed: '処理済み',
+          },
         },
         language: {
           select: '言語を選択',
@@ -1217,6 +1325,15 @@ i18n.use(initReactI18next).init({
           reset: '초기화',
           mixed_file_types:
             '파일이 혼합되었습니다. 모두 .enc 확장자를 가지거나, 아무것도 가지지 않아야 합니다.',
+          stats: {
+            total_size: '총 크기',
+            time_taken: '걸린 시간',
+            average_speed: '평균 속도',
+            progress: '진행 상황',
+            speed: '속도',
+            eta: '남은 시간',
+            processed: '처리된',
+          },
         },
         language: {
           select: '언어 선택',
@@ -1315,6 +1432,15 @@ i18n.use(initReactI18next).init({
           reset: 'रीसेट',
           mixed_file_types:
             'फाइलें मिश्रित हैं। सभी में .enc एक्सटेंशन होना चाहिए या कोई भी नहीं होना चाहिए।',
+          stats: {
+            total_size: 'कुल आकार',
+            time_taken: 'समय लगा',
+            average_speed: 'औसत गति',
+            progress: 'प्रगति',
+            speed: 'गति',
+            eta: 'शेष समय',
+            processed: 'प्रसंस्करण',
+          },
         },
         language: {
           select: 'भाषा चुनें',

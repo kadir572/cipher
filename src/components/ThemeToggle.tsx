@@ -1,4 +1,4 @@
-import { useThemeStore } from '@/lib/store'
+import { useThemeStore } from '@/lib/stores/settings.store'
 import { Switch } from './ui/switch'
 import { Label } from './ui/label'
 import MoonIcon from './icons/MoonIcon'

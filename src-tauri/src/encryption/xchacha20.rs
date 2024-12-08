@@ -8,7 +8,7 @@ use std::{
     fs::{remove_file, File},
     io::{BufReader, Read, Write},
     path::Path,
-    time::Instant,
+    time::{Instant, Duration},
 };
 use tauri::{AppHandle, Emitter};
 
@@ -22,6 +22,8 @@ use super::helpers::{
 };
 
 const CHUNK_SIZE: usize = 16384;
+const MIN_EVENT_INTERVAL: Duration = Duration::from_millis(30);
+const EVENT_BUFFER_SIZE: usize = 3;
 
 /// Core encryption function that handles the actual XChaCha20-Poly1305 encryption
 /// 
@@ -135,6 +137,7 @@ async fn read_file_with_progress(
     let file_size = source.get_ref().metadata().map(|m| m.len()).unwrap_or(0) as usize;
     let mut bytes_read_total = 0;
     let start_time = Instant::now();
+    let mut last_event = Instant::now();
 
     loop {
         match source.read(&mut buffer) {
@@ -158,27 +161,23 @@ async fn read_file_with_progress(
                     0.0
                 };
 
-                let progress_info = ProgressInfo {
-                    percentage: progress,
-                    bytes_processed: bytes_read_total,
-                    total_bytes: file_size,
-                    speed_mbps: speed,
-                    elapsed_seconds: elapsed,
-                    estimated_remaining_seconds: estimated_remaining,
-                };
+                // Only emit event and log if enough time has passed
+                if last_event.elapsed() >= MIN_EVENT_INTERVAL {
+                    let progress_info = ProgressInfo {
+                        percentage: progress,
+                        bytes_processed: bytes_read_total,
+                        total_bytes: file_size,
+                        speed_mbps: speed,
+                        elapsed_seconds: elapsed,
+                        estimated_remaining_seconds: estimated_remaining,
+                    };
 
-                let event_name = format!("{}_{}", event_prefix, sanitize_path(file_path));
-                app.emit(&event_name, &progress_info).unwrap();
-                
-                println!(
-                    "Progress: {:.1}% | Processed: {:.2} MB / {:.2} MB | Speed: {:.2} MB/s | Elapsed: {:.1}s | Remaining: {:.1}s",
-                    progress,
-                    bytes_read_total as f64 / (1024.0 * 1024.0),
-                    file_size as f64 / (1024.0 * 1024.0),
-                    speed,
-                    elapsed,
-                    estimated_remaining
-                );
+                    let event_name = format!("{}_{}", event_prefix, sanitize_path(file_path));
+                    // Small sleep to allow UI to catch up
+                    std::thread::sleep(Duration::from_millis(1));
+                    app.emit(&event_name, &progress_info).unwrap();
+                    last_event = Instant::now();
+                }
             }
             Err(_) => {
                 return Err(create_error_response(
@@ -269,6 +268,7 @@ pub async fn encrypt_file(
 
     let nonce = Nonce::from_slice(nonce.as_slice()).unwrap();
     let total_chunks = (contents.len() + CHUNK_SIZE - 1) / CHUNK_SIZE;
+    let mut last_event = Instant::now();
 
     // Encrypt file in chunks
     for (index, chunk) in contents.chunks(CHUNK_SIZE).enumerate() {
@@ -296,27 +296,21 @@ pub async fn encrypt_file(
             0.0
         };
 
-        let progress_info = ProgressInfo {
-            percentage: progress,
-            bytes_processed,
-            total_bytes: contents.len(),
-            speed_mbps: speed,
-            elapsed_seconds: elapsed,
-            estimated_remaining_seconds: estimated_remaining,
-        };
+        // Only emit event and log if enough time has passed
+        if last_event.elapsed() >= MIN_EVENT_INTERVAL {
+            let progress_info = ProgressInfo {
+                percentage: progress,
+                bytes_processed,
+                total_bytes: contents.len(),
+                speed_mbps: speed,
+                elapsed_seconds: elapsed,
+                estimated_remaining_seconds: estimated_remaining,
+            };
 
-        let event_name = format!("encryption_progress_{}", sanitize_path(file_path));
-        app.emit(&event_name, &progress_info).unwrap();
-        
-        println!(
-            "Encryption Progress: {:.1}% | Processed: {:.2} MB / {:.2} MB | Speed: {:.2} MB/s | Elapsed: {:.1}s | Remaining: {:.1}s",
-            progress,
-            bytes_processed as f64 / (1024.0 * 1024.0),
-            contents.len() as f64 / (1024.0 * 1024.0),
-            speed,
-            elapsed,
-            estimated_remaining
-        );
+            let event_name = format!("encryption_progress_{}", sanitize_path(file_path));
+            app.emit(&event_name, &progress_info).unwrap();
+            last_event = Instant::now();
+        }
     }
 
     let total_time = start_time.elapsed().as_secs_f64();
@@ -413,6 +407,7 @@ pub async fn decrypt_file(
 
     let nonce = Nonce::from_slice(nonce.as_slice()).unwrap();
     let total_chunks = (encrypted_data.len() + CHUNK_SIZE - 1) / CHUNK_SIZE;
+    let mut last_event = Instant::now();
 
     // Decrypt file in chunks
     for (index, chunk) in encrypted_data.chunks(CHUNK_SIZE).enumerate() {
@@ -437,27 +432,21 @@ pub async fn decrypt_file(
             0.0
         };
 
-        let progress_info = ProgressInfo {
-            percentage: progress,
-            bytes_processed,
-            total_bytes: encrypted_data.len(),
-            speed_mbps: speed,
-            elapsed_seconds: elapsed,
-            estimated_remaining_seconds: estimated_remaining,
-        };
+        // Only emit event and log if enough time has passed
+        if last_event.elapsed() >= MIN_EVENT_INTERVAL {
+            let progress_info = ProgressInfo {
+                percentage: progress,
+                bytes_processed,
+                total_bytes: encrypted_data.len(),
+                speed_mbps: speed,
+                elapsed_seconds: elapsed,
+                estimated_remaining_seconds: estimated_remaining,
+            };
 
-        let event_name = format!("decryption_progress_{}", sanitize_path(file_path));
-        app.emit(&event_name, &progress_info).unwrap();
-        
-        println!(
-            "Decryption Progress: {:.1}% | Processed: {:.2} MB / {:.2} MB | Speed: {:.2} MB/s | Elapsed: {:.1}s | Remaining: {:.1}s",
-            progress,
-            bytes_processed as f64 / (1024.0 * 1024.0),
-            encrypted_data.len() as f64 / (1024.0 * 1024.0),
-            speed,
-            elapsed,
-            estimated_remaining
-        );
+            let event_name = format!("decryption_progress_{}", sanitize_path(file_path));
+            app.emit(&event_name, &progress_info).unwrap();
+            last_event = Instant::now();
+        }
     }
 
     let total_time = start_time.elapsed().as_secs_f64();

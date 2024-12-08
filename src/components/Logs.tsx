@@ -27,7 +27,7 @@ export default function Logs() {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const fetchedLogs = await invoke<Log[]>('get_all_logs')
+        const fetchedLogs = await invoke<Log[]>('get_logs')
         setLogs(fetchedLogs)
       } catch (e) {
         console.error(e)
@@ -56,7 +56,7 @@ export default function Logs() {
 
   const handleClearLogs = async () => {
     try {
-      await invoke('clear_all_logs')
+      await invoke('clear_logs')
       setLogs([])
       toast.info(t('logs.cleared'))
     } catch (e) {

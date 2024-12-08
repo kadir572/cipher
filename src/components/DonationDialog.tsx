@@ -15,7 +15,7 @@ import HeartIcon from './icons/HeartIcon'
 import { invoke } from '@tauri-apps/api/core'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
-import { useStripeStore } from '@/lib/store'
+import { useStripeStore } from '@/lib/stores/stripe.store'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import {
@@ -29,7 +29,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { z, ZodIssue } from 'zod'
-import { currencies } from '@/lib/constants'
+import { currencies } from '@/lib/constants/stripe.constants'
 
 export default function DonationDialog() {
   const [amount, setAmount] = useState<string>('')

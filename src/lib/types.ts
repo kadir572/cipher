@@ -19,11 +19,18 @@ export enum Status {
   Error = 'error',
 }
 
+export type ProcessingStats = {
+  total_size_bytes: number
+  processing_time_seconds: number
+  average_speed_mbps: number
+}
+
 export type AppResponse = {
   status: Status
   text_code: ResponseTextCode
   file_path?: string
   timestamp: string
+  stats?: ProcessingStats
 }
 
 export type LogLevel = 'info' | 'error' | 'warning' | 'debug' | 'critical'

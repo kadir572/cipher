@@ -1,16 +1,18 @@
 import { create } from 'zustand'
 
-// export type Log = {
-//   type: 'success' | 'error'
-//   variant: ErrorType | SuccessType
-//   timestamp: string
-//   filePath?: string
-// }
+interface ProgressInfo {
+  percentage: number
+  bytes_processed: number
+  total_bytes: number
+  speed_mbps: number
+  elapsed_seconds: number
+  estimated_remaining_seconds: number
+}
 
 export type ProgressState = {
-  progress: { key: string; value: number }[]
+  progress: { key: string; value: number; progressInfo?: ProgressInfo }[]
   addProgress: (key: string) => void
-  setProgress: (num: number, key: string) => void
+  setProgress: (num: number, key: string, info?: ProgressInfo) => void
   resetProgress: () => void
 }
 
@@ -20,7 +22,7 @@ export const useProgressStore = create<ProgressState>(set => ({
     set(state => ({
       progress: [...state.progress, { key, value: 0 }],
     })),
-  setProgress: (num: number, key: string) =>
+  setProgress: (num: number, key: string, info?: ProgressInfo) =>
     set(state => {
       return {
         progress: state.progress.map(p => {
@@ -28,6 +30,7 @@ export const useProgressStore = create<ProgressState>(set => ({
             return {
               key,
               value: num,
+              progressInfo: info,
             }
           }
           return p
@@ -90,46 +93,6 @@ export const useFilePathStore = create<FilePathState>(set => ({
     set(() => ({
       filePaths: [],
     })),
-}))
-
-export type ThemeState = {
-  isDarkMode: boolean
-  toggleDarkMode: (isDarkMode?: boolean) => void
-}
-
-export const useThemeStore = create<ThemeState>(set => ({
-  isDarkMode: JSON.parse(localStorage.getItem('isDarkMode') ?? 'false'),
-  toggleDarkMode: (isDarkMode?: boolean) =>
-    set(state => {
-      if (isDarkMode !== undefined) {
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark')
-        } else {
-          document.documentElement.classList.remove('dark')
-        }
-        return {
-          isDarkMode,
-        }
-      } else {
-        document.documentElement.classList.toggle('dark', !state.isDarkMode)
-      }
-      return {
-        isDarkMode: !state.isDarkMode,
-      }
-    }),
-}))
-
-export type StripeState = {
-  clientSecret: string | null
-  setClientSecret: (clientSecret: string | null) => void
-}
-
-export const useStripeStore = create<StripeState>(set => ({
-  clientSecret: null,
-  setClientSecret: clientSecret =>
-    set({
-      clientSecret,
-    }),
 }))
 
 export type LastLogState = {

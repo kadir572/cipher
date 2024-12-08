@@ -6,14 +6,14 @@ import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { invoke } from '@tauri-apps/api/core'
 import { toast } from 'sonner'
-import { getErrorMessage, getResponseMessage } from '@/lib/utils'
+import { getErrorMessage } from '@/lib/utils'
 import {
-  useCurrentLogsStore,
-  useFilePathStore,
-  useIsProcessingStore,
-  usePasswordStore,
   useProgressStore,
-} from '@/lib/store'
+  usePasswordStore,
+  useIsProcessingStore,
+  useFilePathStore,
+  useCurrentLogsStore,
+} from '@/lib/stores/encryption.store'
 import { Progress } from './ui/progress'
 import { listen } from '@tauri-apps/api/event'
 import { z } from 'zod'
@@ -28,6 +28,34 @@ import { AppResponse } from '@/lib/types'
 import { CheckIcon, XIcon } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 import InfoIcon from './icons/InfoIcon'
+
+interface ProgressInfo {
+  percentage: number
+  bytes_processed: number
+  total_bytes: number
+  speed_mbps: number
+  elapsed_seconds: number
+  estimated_remaining_seconds: number
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
+  if (bytes < 1024 * 1024 * 1024)
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB'
+}
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) return seconds.toFixed(1) + 's'
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes}m ${remainingSeconds.toFixed(0)}s`
+}
+
+const getFileName = (path: string) => {
+  return path.split(/[\\/]/).pop() || path
+}
 
 export default function Encryption() {
   const { t } = useTranslation()
@@ -62,7 +90,7 @@ export default function Encryption() {
 
   const passwordValidation = passwordSchema.safeParse(password)
 
-  const handleClick = async () => {
+  const handleUploadFiles = async () => {
     if (isProcessing) return
     try {
       const fpArr = await open({
@@ -78,22 +106,16 @@ export default function Encryption() {
       const hasNonEncFiles = fpArr.some(fp => !fp.endsWith('.enc'))
 
       if (hasEncFiles && hasNonEncFiles) {
-        return toast.error(t('encryption.mixed_file_types'), {
-          duration: 6000,
-        })
+        return toast.error(t('encryption.mixed_file_types'))
       }
 
       if (passwordInputRef.current) {
         passwordInputRef.current.focus()
       }
-      toast.success(t('encryption.uploaded'), {
-        duration: 6000,
-      })
+      toast.success(t('encryption.uploaded'))
     } catch (e) {
       const error = e as unknown as { message: string }
-      toast.error(error.message, {
-        duration: 6000,
-      })
+      toast.error(error.message)
     }
   }
 
@@ -102,9 +124,7 @@ export default function Encryption() {
     setShowPassword(false)
     setPassword('')
     resetProgress()
-    toast.info(t('encryption.reset_message'), {
-      duration: 6000,
-    })
+    toast.info(t('encryption.reset_message'))
   }
 
   const handleEncrypt = async () => {
@@ -122,27 +142,41 @@ export default function Encryption() {
           '_'
         )}`
 
-        listen(eventName, e => {
-          setProgress(Math.floor(e.payload as number), filePath)
+        listen<ProgressInfo>(eventName, e => {
+          const info = e.payload
+          setProgress(Math.floor(info.percentage), filePath, info)
         }).catch(e => {
-          toast.error(e, { duration: 6000 })
+          toast.error(e)
           reject()
         })
 
         invoke<AppResponse>('encrypt_file', { filePath, password })
-          .then(res => {
+          .then(response => {
             resolve()
-            setLastLog(
-              t('encryption.encrypt_success'),
-              `${t('encryption.file_saved_at')}: ${filePath}`,
-              'success'
-            )
-            toast.success(
-              getResponseMessage(res.text_code, res.file_path ?? '', t),
-              {
-                duration: 6000,
-              }
-            )
+            const stats = response.stats
+            if (stats) {
+              setLastLog(
+                t('encryption.encrypt_success'),
+                `${t('encryption.file_saved_at')}: ${filePath}\n` +
+                  `${t('encryption.stats.total_size')}: ${formatBytes(
+                    stats.total_size_bytes
+                  )}\n` +
+                  `${t('encryption.stats.time_taken')}: ${formatTime(
+                    stats.processing_time_seconds
+                  )}\n` +
+                  `${t(
+                    'encryption.stats.average_speed'
+                  )}: ${stats.average_speed_mbps.toFixed(2)} MB/s`,
+                'success'
+              )
+            } else {
+              setLastLog(
+                t('encryption.encrypt_success'),
+                `${t('encryption.file_saved_at')}: ${filePath}`,
+                'success'
+              )
+            }
+            toast.success(t('encryption.encrypt_success'))
           })
           .catch(res => {
             setPassword('')
@@ -152,9 +186,7 @@ export default function Encryption() {
             }
             reject()
             setLastLog('Error', getErrorMessage(res.text_code, t), 'error')
-            toast.error(getErrorMessage(res.text_code, t), {
-              duration: 6000,
-            })
+            toast.error(getErrorMessage(res.text_code, t))
           })
       })
     })
@@ -191,28 +223,42 @@ export default function Encryption() {
           '_'
         )}`
 
-        listen(eventName, e => {
-          setProgress(Math.floor(e.payload as number), filePath)
+        listen<ProgressInfo>(eventName, e => {
+          const info = e.payload
+          setProgress(Math.floor(info.percentage), filePath, info)
         }).catch(e => {
-          toast.error(e, { duration: 6000 })
+          toast.error(e)
           reject()
         })
 
         invoke<AppResponse>('decrypt_file', { filePath, password })
-          .then(res => {
+          .then(response => {
             setProgress(100, filePath)
             resolve()
-            setLastLog(
-              t('encryption.decrypt_success'),
-              `${t('encryption.file_saved_at')}: ${filePath}`,
-              'success'
-            )
-            toast.success(
-              getResponseMessage(res.text_code, res.file_path ?? '', t),
-              {
-                duration: 6000,
-              }
-            )
+            const stats = response.stats
+            if (stats) {
+              setLastLog(
+                t('encryption.decrypt_success'),
+                `${t('encryption.file_saved_at')}: ${filePath}\n` +
+                  `${t('encryption.stats.total_size')}: ${formatBytes(
+                    stats.total_size_bytes
+                  )}\n` +
+                  `${t('encryption.stats.time_taken')}: ${formatTime(
+                    stats.processing_time_seconds
+                  )}\n` +
+                  `${t(
+                    'encryption.stats.average_speed'
+                  )}: ${stats.average_speed_mbps.toFixed(2)} MB/s`,
+                'success'
+              )
+            } else {
+              setLastLog(
+                t('encryption.decrypt_success'),
+                `${t('encryption.file_saved_at')}: ${filePath}`,
+                'success'
+              )
+            }
+            toast.success(t('encryption.decrypt_success'))
           })
           .catch(res => {
             setPassword('')
@@ -222,9 +268,7 @@ export default function Encryption() {
             }
             reject()
             setLastLog('Error', getErrorMessage(res.text_code, t), 'error')
-            toast.error(getErrorMessage(res.text_code, t), {
-              duration: 6000,
-            })
+            toast.error(getErrorMessage(res.text_code, t))
           })
       })
     })
@@ -274,7 +318,7 @@ export default function Encryption() {
     >
       <div className='flex items-center w-full bg-slate-700 dark:bg-slate-800 dark:text-slate-200 rounded-md shadow-md text-white h-12'>
         <span
-          onClick={handleClick}
+          onClick={handleUploadFiles}
           className={`px-3 ${
             isProcessing ? 'cursor-default' : 'cursor-pointer'
           }`}
@@ -283,7 +327,7 @@ export default function Encryption() {
         </span>
         <Separator orientation='vertical' />
         <span
-          onClick={handleClick}
+          onClick={handleUploadFiles}
           className={`px-3 ${
             isProcessing ? 'cursor-default' : 'cursor-pointer'
           } text-ellipsis text-nowrap overflow-x-hidden grow`}
@@ -386,12 +430,15 @@ export default function Encryption() {
       <div className='relative'>
         <div
           className={`h-0 ${
-            password.length > 0 && filePaths.every(fp => !fp.endsWith('.enc'))
-              ? 'h-[120px]'
-              : 'h-0'
-          } transition-all duration-200 overflow-hidden`}
+            password.length > 0 &&
+            filePaths.every(fp => !fp.endsWith('.enc')) &&
+            !isProcessing
+              ? 'h-[120px] opacity-100'
+              : 'h-0 opacity-0'
+          } transition-all duration-300 ease-in-out overflow-hidden`}
         >
           {filePaths.every(fp => !fp.endsWith('.enc')) &&
+            !isProcessing &&
             passwordRules.map((rule, index) => (
               <div
                 key={index}
@@ -425,61 +472,143 @@ export default function Encryption() {
         <div className='transition-all duration-300'>
           <div className='overflow-hidden flex flex-col gap-4'>
             {progress.map((p, i) => (
-              <div key={p.key} className='flex flex-col gap-1'>
-                <span className='flex items-center gap-2'>
-                  <span>
-                    {p.value < 100 && (
-                      <ClipLoader color='#1e293b' size={20} className='' />
-                    )}
-                    {p.value >= 100 && (
-                      <span>
-                        <TickIcon />
-                      </span>
-                    )}
+              <div
+                key={p.key}
+                className='flex flex-col gap-2 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800'
+              >
+                <div className='flex items-center justify-between'>
+                  <span className='flex items-center gap-2 font-medium'>
+                    <span>
+                      {p.value < 100 && (
+                        <ClipLoader color='#1e293b' size={16} />
+                      )}
+                      {p.value >= 100 && (
+                        <span className='text-green-500'>
+                          <TickIcon />
+                        </span>
+                      )}
+                    </span>
+                    <span className='truncate'>
+                      {getFileName(filePaths[i])}
+                    </span>
                   </span>
-                  {filePaths[i]}
-                </span>
-                <Progress
-                  className={`${
-                    isProcessing ? 'opacity-100' : 'opacity-0'
-                  } transition-opacity duration-200`}
-                  value={p.value}
-                  indicatorColor='bg-slate-700 dark:bg-slate-800'
-                />
+                  <span className='text-sm font-semibold'>
+                    {p.value.toFixed(1)}%
+                  </span>
+                </div>
+
+                <div className='space-y-2'>
+                  <Progress
+                    className={`${
+                      isProcessing ? 'opacity-100' : 'opacity-0'
+                    } transition-opacity duration-200`}
+                    value={p.value}
+                    indicatorColor='bg-slate-700 dark:bg-slate-800'
+                  />
+
+                  {isProcessing && (
+                    <div className='grid grid-cols-2 gap-2 text-sm text-slate-600 dark:text-slate-400'>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-slate-500'>
+                          {t('encryption.stats.progress')}:
+                        </span>
+                        <span className='font-medium'>
+                          {p.value.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-2 justify-end'>
+                        <span className='text-slate-500'>
+                          {t('encryption.stats.processed')}:
+                        </span>
+                        <span className='font-medium'>
+                          {formatBytes(p.progressInfo?.bytes_processed || 0)} /{' '}
+                          {formatBytes(p.progressInfo?.total_bytes || 0)}
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-slate-500'>
+                          {t('encryption.stats.speed')}:
+                        </span>
+                        <span className='font-medium'>
+                          {(p.progressInfo?.speed_mbps || 0).toFixed(2)} MB/s
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-2 justify-end'>
+                        <span className='text-slate-500'>
+                          {t('encryption.stats.eta')}:
+                        </span>
+                        <span className='font-medium'>
+                          {formatTime(
+                            p.progressInfo?.estimated_remaining_seconds || 0
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         <Alert
-          className={`transition-all transform duration-300 ease-in-out flex items-center gap-4 ${
+          className={`transition-all transform duration-300 ease-in-out ${
             lastLog?.title && !isProcessing
-              ? 'opacity-100 scale-100 max-h-[200px] mt-4'
+              ? 'opacity-100 scale-100 max-h-[300px] mt-4'
               : 'opacity-0 scale-0 max-h-0 overflow-hidden mt-0'
           } ${
             lastLog?.type === 'success'
-              ? 'bg-green-400 border-green-600 dark:bg-green-800'
-              : 'bg-red-400 border-red-600 dark:bg-red-800'
-          } text-slate-800 text-wrap break-words origin-center relative`}
+              ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-900'
+              : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900'
+          } rounded-lg`}
         >
-          <div>
-            <InfoIcon />
-          </div>
-          <div className='flex-grow'>
-            <div className='flex items-center justify-between'>
-              <AlertTitle className='font-semibold'>
-                {lastLog?.title}
-              </AlertTitle>
-              <button
-                onClick={() => setLastLog(null, null, 'success')}
-                className='p-1 hover:bg-black/10 rounded-full transition-colors'
-                type='button'
-              >
-                <XIcon className='w-4 h-4' />
-              </button>
+          <div className='flex gap-4'>
+            <div
+              className={`${
+                lastLog?.type === 'success' ? 'text-green-500' : 'text-red-500'
+              }`}
+            >
+              <InfoIcon />
             </div>
+            <div className='flex-grow space-y-3'>
+              <div className='flex items-start justify-between'>
+                <AlertTitle
+                  className={`font-semibold ${
+                    lastLog?.type === 'success'
+                      ? 'text-green-800 dark:text-green-200'
+                      : 'text-red-800 dark:text-red-200'
+                  }`}
+                >
+                  {lastLog?.title}
+                </AlertTitle>
+                <button
+                  onClick={() => setLastLog(null, null, 'success')}
+                  className='p-1 hover:bg-black/5 rounded-full transition-colors'
+                  type='button'
+                >
+                  <XIcon className='w-4 h-4' />
+                </button>
+              </div>
 
-            <AlertDescription>{lastLog?.description}</AlertDescription>
+              <AlertDescription className='text-slate-600 dark:text-slate-300'>
+                {lastLog?.description?.split('\n').map((line, index) => (
+                  <div key={index} className='flex items-center gap-2 py-0.5'>
+                    {index === 0 ? (
+                      <span>{line}</span>
+                    ) : (
+                      <>
+                        <span className='text-slate-500 min-w-[120px]'>
+                          {line.split(': ')[0]}:
+                        </span>
+                        <span className='font-medium'>
+                          {line.split(': ')[1]}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </AlertDescription>
+            </div>
           </div>
         </Alert>
       </div>
