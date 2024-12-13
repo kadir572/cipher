@@ -52,6 +52,8 @@ pub enum ResponseTextCode {
     FileCreationSuccessful,
     #[strum(serialize = "logs_downloaded", to_string = "Logs downloaded")]
     LogsDownloaded,
+    #[strum(serialize = "file_delete_failed", to_string = "File delete failed")]
+    FileDeleteFailed,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Display, EnumString, AsRefStr)]
@@ -89,4 +91,10 @@ pub struct Log {
     pub level: LogLevel,
     pub text_code: ResponseTextCode,
     pub file_path: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct LogsResponse {
+    pub logs: Vec<Log>,
+    pub db_size: i64,
 }

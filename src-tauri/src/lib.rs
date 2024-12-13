@@ -1,11 +1,12 @@
 pub mod encryption;
-pub mod logs;
+pub mod log;
 pub mod network;
 pub mod stripe;
 pub mod types;
 
 use encryption::{decrypt_file, encrypt_file};
-use logs::duckdb::{add_log, clear_logs, download_logs, get_logs};
+use log::duckdb::{add_log, clear_logs, download_logs, get_logs};
+use ::log::LevelFilter;
 use network::check_network;
 use stripe::get_stripe_client_secret;
 
@@ -28,7 +29,7 @@ pub fn run() {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
+                        .level(LevelFilter::Info)
                         .build(),
                 )?;
             }

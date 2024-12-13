@@ -1,7 +1,7 @@
-import Encryption from './Encryption'
+import Encryption from './encryption/Encryption'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import Settings from './Settings'
-import Logs from './Logs'
+import Logs from './log/Logs'
 import { useTranslation } from 'react-i18next'
 import SettingsIcon from './icons/SettingsIcon'
 import InfoIcon from './icons/InfoIcon'
@@ -17,7 +17,7 @@ export default function ModeSelector() {
             <span>
               <KeyIcon />
             </span>
-            <span>{t('tabs.encryption')}</span>
+            <span>{t('nav.tabs.encryptionDecryption')}</span>
           </div>
         </TabsTrigger>
         <TabsTrigger value='logs' className='col-span-3'>
@@ -25,7 +25,7 @@ export default function ModeSelector() {
             <span>
               <InfoIcon />
             </span>
-            <span>{t('tabs.logs')}</span>
+            <span>{t('nav.tabs.logs')}</span>
           </div>
         </TabsTrigger>
         <TabsTrigger value='settings' className='col-span-3'>
@@ -33,7 +33,7 @@ export default function ModeSelector() {
             <span>
               <SettingsIcon />
             </span>
-            <span>{t('tabs.settings')}</span>
+            <span>{t('nav.tabs.settings')}</span>
           </div>
         </TabsTrigger>
       </TabsList>

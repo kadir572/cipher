@@ -1,35 +1,35 @@
 import { create } from 'zustand'
-
-interface ProgressInfo {
-  percentage: number
-  bytes_processed: number
-  total_bytes: number
-  speed_mbps: number
-  elapsed_seconds: number
-  estimated_remaining_seconds: number
-}
-
-export type ProgressState = {
-  progress: { key: string; value: number; progressInfo?: ProgressInfo }[]
-  addProgress: (key: string) => void
-  setProgress: (num: number, key: string, info?: ProgressInfo) => void
-  resetProgress: () => void
-}
+import { createRef } from 'react'
+import {
+  DeleteOriginalState,
+  FilePathState,
+  IsProcessingStore,
+  PasswordState,
+  ProgressInfo,
+  ProgressResult,
+} from '../types'
+import { ProgressState } from '../types'
 
 export const useProgressStore = create<ProgressState>(set => ({
   progress: [],
   addProgress: (key: string) =>
     set(state => ({
-      progress: [...state.progress, { key, value: 0 }],
+      progress: [
+        ...state.progress,
+        { key, progressInfo: { percentage: 0, elapsed_seconds: 0 } },
+      ],
     })),
-  setProgress: (num: number, key: string, info?: ProgressInfo) =>
+  removeProgress: (key: string) =>
+    set(state => ({
+      progress: state.progress.filter(p => p.key !== key),
+    })),
+  setProgressInfo: (key: string, info: ProgressInfo) =>
     set(state => {
       return {
         progress: state.progress.map(p => {
           if (p.key === key) {
             return {
               key,
-              value: num,
               progressInfo: info,
             }
           }
@@ -41,14 +41,14 @@ export const useProgressStore = create<ProgressState>(set => ({
     set(() => ({
       progress: [],
     })),
+  setProgressResult: (key: string, result: ProgressResult) =>
+    set(state => ({
+      progress: state.progress.map(p => {
+        if (p.key !== key) return p
+        return { ...p, progressResult: result }
+      }),
+    })),
 }))
-
-export type PasswordState = {
-  password: string
-  setPassword: (password: string) => void
-  showPassword: boolean
-  setShowPassword: (showPassword?: boolean) => void
-}
 
 export const usePasswordStore = create<PasswordState>(set => ({
   password: '',
@@ -62,12 +62,13 @@ export const usePasswordStore = create<PasswordState>(set => ({
       showPassword:
         showPassword !== undefined ? showPassword : !state.showPassword,
     })),
+  passwordInputRef: createRef<HTMLInputElement>(),
+  isPasswordValid: false,
+  setIsPasswordValid: (isValid: boolean) =>
+    set(() => ({
+      isPasswordValid: isValid,
+    })),
 }))
-
-export type IsProcessingStore = {
-  isProcessing: boolean
-  setIsProcessing: (isProcessing: boolean) => void
-}
 
 export const useIsProcessingStore = create<IsProcessingStore>(set => ({
   isProcessing: false,
@@ -76,12 +77,6 @@ export const useIsProcessingStore = create<IsProcessingStore>(set => ({
       isProcessing,
     })),
 }))
-
-export type FilePathState = {
-  filePaths: string[]
-  addFilePath: (filePath: string) => void
-  resetFilePaths: () => void
-}
 
 export const useFilePathStore = create<FilePathState>(set => ({
   filePaths: [],
@@ -95,21 +90,10 @@ export const useFilePathStore = create<FilePathState>(set => ({
     })),
 }))
 
-export type LastLogState = {
-  lastLog: {
-    title: string | null
-    description: string | null
-    type: 'success' | 'error'
-  } | null
-  setLastLog: (
-    title: string | null,
-    description: string | null,
-    type: 'success' | 'error'
-  ) => void
-}
-
-export const useCurrentLogsStore = create<LastLogState>(set => ({
-  lastLog: null,
-  setLastLog: (title, description, type) =>
-    set({ lastLog: { title, description, type } }),
+export const useDeleteOriginalStore = create<DeleteOriginalState>(set => ({
+  deleteOriginal: false,
+  setDeleteOriginal: (deleteOriginal: boolean) =>
+    set(() => ({
+      deleteOriginal,
+    })),
 }))

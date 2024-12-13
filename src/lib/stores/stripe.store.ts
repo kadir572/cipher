@@ -1,9 +1,5 @@
 import { create } from 'zustand'
-
-export type StripeState = {
-  clientSecret: string | null
-  setClientSecret: (clientSecret: string | null) => void
-}
+import { StripeState } from '../types'
 
 export const useStripeStore = create<StripeState>(set => ({
   clientSecret: null,

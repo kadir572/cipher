@@ -13,7 +13,7 @@ export default function RootLayout() {
   }, [i18n])
 
   useEffect(() => {
-    const theme = JSON.parse(localStorage.getItem('isDarkMode') ?? 'false') // Default to false
+    const theme = JSON.parse(localStorage.getItem('isDarkMode') ?? 'false')
     toggleDarkMode(theme)
   }, [toggleDarkMode])
 
