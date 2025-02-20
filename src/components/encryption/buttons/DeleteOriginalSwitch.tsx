@@ -24,6 +24,10 @@ export default function DeleteOriginalSwitch() {
   const { filePaths } = useFilePathStore()
   const { isProcessing } = useIsProcessingStore()
   const { deleteOriginal, setDeleteOriginal } = useDeleteOriginalStore()
+  const date = Date.now()
+  console.log(date)
+  const date2 = new Date().getTime()
+  console.log(date2)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
 
