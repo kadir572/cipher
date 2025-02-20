@@ -3,7 +3,7 @@ import Header from '../partials/Header'
 import Footer from '../partials/Footer'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
-import { useThemeStore } from '@/lib/store'
+import { useThemeStore } from '@/lib/stores/settings.store'
 
 export default function RootLayout() {
   const { i18n } = useTranslation()
@@ -13,7 +13,7 @@ export default function RootLayout() {
   }, [i18n])
 
   useEffect(() => {
-    const theme = JSON.parse(localStorage.getItem('isDarkMode') ?? 'false') // Default to false
+    const theme = JSON.parse(localStorage.getItem('isDarkMode') ?? 'false')
     toggleDarkMode(theme)
   }, [toggleDarkMode])
 

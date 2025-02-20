@@ -1,11 +1,9 @@
 import ModeSelector from '../ModeSelector'
 
-const LandingPage: React.FC = () => {
+export default function LandingPage() {
   return (
     <div className=''>
       <ModeSelector />
     </div>
   )
 }
-
-export default LandingPage

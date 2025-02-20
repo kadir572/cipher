@@ -15,7 +15,7 @@ import HeartIcon from './icons/HeartIcon'
 import { invoke } from '@tauri-apps/api/core'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
-import { useStripeStore } from '@/lib/store'
+import { useStripeStore } from '@/lib/stores/stripe.store'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import {
@@ -29,7 +29,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { z, ZodIssue } from 'zod'
-import { currencies } from '@/lib/constants'
+import { currencies } from '@/lib/constants/stripe.constants'
 
 export default function DonationDialog() {
   const [amount, setAmount] = useState<string>('')
@@ -42,12 +42,12 @@ export default function DonationDialog() {
 
   const donationAmountSchema = z
     .string()
-    .min(1, t('donation.min')) // Minimum value of 1
+    .min(1, t('donation.validation.minAmount')) // Minimum value of 1
     .refine(value => !isNaN(Number(value)), {
-      message: t('donation.valid'), // Ensure it's a valid number
+      message: t('donation.validation.invalidAmount'),
     })
     .refine(value => Number(value) >= 1, {
-      message: t('donation.min'),
+      message: t('donation.validation.minAmount'),
     })
 
   const donationAmountValidation = donationAmountSchema.safeParse(amount)
@@ -115,20 +115,20 @@ export default function DonationDialog() {
           <span>
             <HeartIcon />
           </span>
-          <span>{t('donation.dialog_button_label')}</span>
+          <span>{t('donation.dialog.openButton')}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className='dark:bg-slate-700 dark:text-slate-200 '>
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           <DialogHeader>
-            <DialogTitle>{t('donation.title')}</DialogTitle>
+            <DialogTitle>{t('donation.dialog.title')}</DialogTitle>
             <DialogDescription className='dark:text-gray-300'>
-              {t('donation.description')}
+              {t('donation.dialog.description')}
             </DialogDescription>
           </DialogHeader>
           <div>
             <Label className='dark:text-gray-300' htmlFor='amount'>
-              {t('donation.currency.label')}
+              {t('donation.form.amount.label')}
             </Label>
             <div className='flex items-center gap-4'>
               <div className='relative'>
@@ -139,7 +139,7 @@ export default function DonationDialog() {
                   id='amount'
                   onChange={e => setAmount(e.target.value)}
                   value={amount}
-                  placeholder={t('donation.currency.placeholder')}
+                  placeholder={t('donation.form.amount.placeholder')}
                   className='pr-12 dark:bg-slate-800 dark:placeholder:text-gray-300'
                 />
                 <span className='absolute right-3 top-[50%] -translate-y-[50%] text-gray-300 text-sm'>
@@ -164,12 +164,12 @@ export default function DonationDialog() {
                 >
                   <Command className='dark:bg-slate-600'>
                     <CommandInput
-                      placeholder={t('donation.currency.search')}
+                      placeholder={t('donation.form.currency.search')}
                       className='h-9'
                     />
                     <CommandList>
                       <CommandEmpty>
-                        {t('donation.currency.empty')}
+                        {t('donation.form.currency.noResult')}
                       </CommandEmpty>
                       <CommandGroup>
                         {currencies.map(c => (
@@ -218,7 +218,7 @@ export default function DonationDialog() {
             </div>
           )}
           <DialogDescription className='dark:text-gray-300'>
-            {t('donation.info')}
+            {t('donation.dialog.info')}
           </DialogDescription>
           <DialogFooter className='mt-4'>
             <Button
@@ -226,7 +226,7 @@ export default function DonationDialog() {
               disabled={amount.length <= 0 || !donationAmountValidation.success}
               className='dark:bg-slate-200'
             >
-              {t('donation.dialog_submit_button_label')}
+              {t('donation.dialog.buttonLabel')}
             </Button>
           </DialogFooter>
         </form>

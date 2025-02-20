@@ -9,13 +9,18 @@
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
+  "plugins": {
+    "watcher": {
+      "ignore": ["./logs.db"]
+    }
+  },
   "app": {
     "windows": [
       {
         "title": "Cipher",
         "width": 800,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "fullscreen": false
       }
     ],

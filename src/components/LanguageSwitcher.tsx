@@ -45,38 +45,38 @@ export default function LanguageSwitcher() {
       label: 'Türkçe (Turkish)',
       value: 'tr',
     },
-    {
-      label: 'العربية (Arabic)',
-      value: 'ar',
-    },
+    // {
+    //   label: 'العربية (Arabic)',
+    //   value: 'ar',
+    // },
     {
       label: 'Español (Spanish)',
       value: 'es',
     },
-    {
-      label: '简体中文 (Chinese - Simplified)',
-      value: 'zh',
-    },
-    {
-      label: 'Português (Portuguese)',
-      value: 'pt',
-    },
-    {
-      label: 'Русский (Russian)',
-      value: 'ru',
-    },
-    {
-      label: '日本語 (Japanese)',
-      value: 'ja',
-    },
-    {
-      label: '한국어 (Korean)',
-      value: 'ko',
-    },
-    {
-      label: 'हिन्दी (Hindi)',
-      value: 'hi',
-    },
+    // {
+    //   label: '简体中文 (Chinese - Simplified)',
+    //   value: 'zh',
+    // },
+    // {
+    //   label: 'Português (Portuguese)',
+    //   value: 'pt',
+    // },
+    // {
+    //   label: 'Русский (Russian)',
+    //   value: 'ru',
+    // },
+    // {
+    //   label: '日本語 (Japanese)',
+    //   value: 'ja',
+    // },
+    // {
+    //   label: '한국어 (Korean)',
+    //   value: 'ko',
+    // },
+    // {
+    //   label: 'हिन्दी (Hindi)',
+    //   value: 'hi',
+    // },
   ]
 
   const [open, setOpen] = useState<boolean>(false)
@@ -96,16 +96,19 @@ export default function LanguageSwitcher() {
           <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
             {value
               ? languages.find(l => l.value === value)?.label
-              : t('language.select')}
+              : t('settings.language.select')}
           </span>
           <ChevronsUpDown className='opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0'>
         <Command className='dark:bg-slate-800'>
-          <CommandInput placeholder={t('language.search')} className='h-9' />
+          <CommandInput
+            placeholder={t('settings.language.search')}
+            className='h-9'
+          />
           <CommandList>
-            <CommandEmpty>{t('language.empty')}</CommandEmpty>
+            <CommandEmpty>{t('settings.language.empty')}</CommandEmpty>
             <CommandGroup>
               {languages.map(l => (
                 <CommandItem

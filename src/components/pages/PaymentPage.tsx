@@ -1,4 +1,4 @@
-import { useStripeStore } from '@/lib/store'
+import { useStripeStore } from '@/lib/stores/stripe.store'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import {
 } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Button } from '../ui/button'
+import { motion } from 'framer-motion'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
@@ -21,7 +22,7 @@ export default function PaymentPage() {
 
   useEffect(() => {
     if (!clientSecret) {
-      toast.error(t('payment.client_secret_error'), {
+      toast.error(t('donation.validation.missingInfo'), {
         duration: 6000,
       })
       navigate('/')
@@ -99,29 +100,39 @@ function CheckoutForm({ clientSecret }: CheckoutFormProps) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='max-w-[48rem] mx-auto p-2 flex flex-col gap-4'
+    <motion.div
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        type: 'spring',
+        stiffness: 380,
+        damping: 30,
+      }}
     >
-      <PaymentElement
-        options={{
-          business: { name: 'Cipher' },
-          layout: { type: 'tabs' },
-        }}
-      />
-      <div className='w-full flex items-center gap-2'>
-        <Button
-          onClick={handleCancel}
-          className='grow'
-          variant='destructive'
-          type='button'
-        >
-          Cancel
-        </Button>
-        <Button className='grow' type='submit'>
-          Pay
-        </Button>
-      </div>
-    </form>
+      <form
+        onSubmit={handleSubmit}
+        className='max-w-[48rem] mx-auto p-2 flex flex-col gap-4'
+      >
+        <PaymentElement
+          options={{
+            business: { name: 'Cipher' },
+            layout: { type: 'tabs' },
+          }}
+        />
+        <div className='w-full flex items-center gap-2'>
+          <Button
+            onClick={handleCancel}
+            className='grow'
+            variant='destructive'
+            type='button'
+          >
+            Cancel
+          </Button>
+          <Button className='grow' type='submit'>
+            Pay
+          </Button>
+        </div>
+      </form>
+    </motion.div>
   )
 }
