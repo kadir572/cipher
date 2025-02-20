@@ -61,8 +61,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
         with:
-          tagName: v0.2.0-beta.1
-          releaseName: v0.2.0-beta.1
+          tagName: v0.2.0-beta.2
+          releaseName: v0.2.0-beta.2
           releaseDraft: true
           prerelease: true
           args: ${{ matrix.args }}
